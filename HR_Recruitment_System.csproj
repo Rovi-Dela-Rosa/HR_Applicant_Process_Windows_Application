@@ -12,10 +12,6 @@
     <Folder Include="Forms\Applicant\" />
     <Folder Include="Forms\HR\" />
     <Folder Include="Forms\Shared\" />
-    <Folder Include="Models\" />
-    <Folder Include="Reports\" />
-    <Folder Include="Utilities\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>

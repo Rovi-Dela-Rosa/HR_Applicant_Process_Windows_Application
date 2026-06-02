@@ -1,4 +1,5 @@
-﻿using HR_Recruitment_System.Database;
+﻿using HR_Applicant_Process_Windows_System;
+using HR_Recruitment_System.Database;
 using MySql.Data.MySqlClient;
 using System;
 using System.Windows.Forms;
@@ -109,6 +110,8 @@ namespace HR_Recruitment_System
                         if (result > 0)
                         {
                             MessageBox.Show("Registration Successful!");
+
+                            AuditTrailManager.LogAction( 1,"Applicant Registered");
 
                             txtEmail.Clear();
                             txtPassword.Clear();

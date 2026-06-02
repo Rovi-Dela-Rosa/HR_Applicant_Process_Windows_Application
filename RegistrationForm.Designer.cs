@@ -92,7 +92,7 @@
             // 
             // btnRegister
             // 
-            btnRegister.Location = new Point(331, 333);
+            btnRegister.Location = new Point(327, 320);
             btnRegister.Name = "btnRegister";
             btnRegister.Size = new Size(140, 48);
             btnRegister.TabIndex = 6;
