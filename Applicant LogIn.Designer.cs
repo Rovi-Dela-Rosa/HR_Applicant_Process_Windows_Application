@@ -69,6 +69,7 @@
             linkLabel1.TabIndex = 8;
             linkLabel1.TabStop = true;
             linkLabel1.Text = "Register Now";
+            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
             // button1
             // 
@@ -82,6 +83,7 @@
             button1.Text = "Sign In";
             button1.TextAlign = ContentAlignment.TopCenter;
             button1.UseVisualStyleBackColor = false;
+            button1.Click += btnLogin_Click;
             // 
             // label4
             // 
@@ -151,14 +153,14 @@
             label1.Text = "Applicant Log-In";
             label1.TextAlign = ContentAlignment.TopCenter;
             // 
-            // Form1
+            // Applicantregister
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Azure;
             ClientSize = new Size(800, 450);
             Controls.Add(panel1);
-            Name = "Form1";
+            Name = "Applicantregister";
             Text = "Form1";
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
