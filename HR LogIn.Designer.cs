@@ -35,8 +35,9 @@
             label2 = new Label();
             richTextBox3 = new RichTextBox();
             richTextBox2 = new RichTextBox();
-            GetHRUername = new RichTextBox();
+            richTextBox1 = new RichTextBox();
             label1 = new Label();
+            linkLabel2 = new LinkLabel();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -44,13 +45,14 @@
             // 
             panel1.Anchor = AnchorStyles.None;
             panel1.BackColor = SystemColors.ButtonHighlight;
+            panel1.Controls.Add(linkLabel2);
             panel1.Controls.Add(HRsigninbtn);
             panel1.Controls.Add(label4);
             panel1.Controls.Add(label3);
             panel1.Controls.Add(label2);
             panel1.Controls.Add(richTextBox3);
             panel1.Controls.Add(richTextBox2);
-            panel1.Controls.Add(GetHRUername);
+            panel1.Controls.Add(richTextBox1);
             panel1.Controls.Add(label1);
             panel1.Location = new Point(305, 125);
             panel1.MaximumSize = new Size(1200, 700);
@@ -94,7 +96,6 @@
             label3.Size = new Size(138, 19);
             label3.TabIndex = 5;
             label3.Text = "Password";
-            label3.Click += label3_Click;
             // 
             // label2
             // 
@@ -116,7 +117,6 @@
             richTextBox3.Size = new Size(250, 23);
             richTextBox3.TabIndex = 3;
             richTextBox3.Text = "";
-            richTextBox3.TextChanged += richTextBox3_TextChanged;
             // 
             // richTextBox2
             // 
@@ -128,26 +128,38 @@
             richTextBox2.TabIndex = 2;
             richTextBox2.Text = "";
             // 
-            // GetHRUername
+            // richTextBox1
             // 
-            GetHRUername.Anchor = AnchorStyles.None;
-            GetHRUername.Location = new Point(68, 114);
-            GetHRUername.MaximumSize = new Size(1200, 700);
-            GetHRUername.Name = "GetHRUername";
-            GetHRUername.Size = new Size(250, 23);
-            GetHRUername.TabIndex = 1;
-            GetHRUername.Text = "";
+            richTextBox1.Anchor = AnchorStyles.None;
+            richTextBox1.Location = new Point(68, 114);
+            richTextBox1.MaximumSize = new Size(1200, 700);
+            richTextBox1.Name = "richTextBox1";
+            richTextBox1.Size = new Size(250, 23);
+            richTextBox1.TabIndex = 1;
+            richTextBox1.Text = "";
             // 
             // label1
             // 
             label1.Anchor = AnchorStyles.None;
             label1.Font = new Font("Segoe UI", 20F);
-            label1.Location = new Point(122, 35);
+            label1.Location = new Point(122, 20);
             label1.MaximumSize = new Size(1200, 700);
             label1.Name = "label1";
             label1.Size = new Size(138, 42);
             label1.TabIndex = 0;
             label1.Text = "HR Log-In";
+            // 
+            // linkLabel2
+            // 
+            linkLabel2.AutoSize = true;
+            linkLabel2.LinkColor = Color.Black;
+            linkLabel2.Location = new Point(21, 20);
+            linkLabel2.Name = "linkLabel2";
+            linkLabel2.Size = new Size(53, 15);
+            linkLabel2.TabIndex = 10;
+            linkLabel2.TabStop = true;
+            linkLabel2.Text = "<-- Back";
+            linkLabel2.Click += Back;
             // 
             // HRLogin
             // 
@@ -160,6 +172,7 @@
             Text = "Form1";
             Click += btnLogin_Click;
             panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -173,7 +186,7 @@
         private Button HRsigninbtn;
         private Label label4;
         private Label label2;
-        private RichTextBox GetHRUername;
-
+        private RichTextBox richTextBox1;
+        private LinkLabel linkLabel2;
     }
 }
