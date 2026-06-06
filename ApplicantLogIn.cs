@@ -9,9 +9,9 @@ using MySql.Data.MySqlClient;
 
 namespace HR_Recruitment_System
 {
-    public partial class Applicantregistration : Form
+    public partial class ApplicantLogin : Form
     {
-        public Applicantregistration()
+        public ApplicantLogin()
         {
             InitializeComponent();
         }
@@ -21,9 +21,19 @@ namespace HR_Recruitment_System
             string connString =
                 "server=localhost;database=hr_recruitment_db;uid=root;pwd=DDNLR023;";
 
-            string username = richTextBox1.Text;
-            string email = richTextBox2.Text;
-            string password = richTextBox3.Text;
+            string username = richTextBox1.Text.Trim();
+            string email = richTextBox2.Text.Trim();
+            string password = richTextBox3.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(username) ||
+                string.IsNullOrWhiteSpace(email) ||
+                string.IsNullOrWhiteSpace(password))
+            {
+                MessageBox.Show("Please fill in all fields.");
+                return;
+            }
+
+
 
             try
             {
@@ -31,8 +41,11 @@ namespace HR_Recruitment_System
                 {
                     conn.Open();
 
-                    string query = @"INSERT INTO ApplicantAccounts (Username, Email, PasswordHash)
-                             VALUES (@Username, @Email, @PasswordHash)";
+                    string query = @"SELECT COUNT(*)
+                             FROM ApplicantAccounts
+                             WHERE Username = @Username
+                             AND Email = @Email
+                             AND PasswordHash = @PasswordHash";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
@@ -40,19 +53,15 @@ namespace HR_Recruitment_System
                         cmd.Parameters.AddWithValue("@Email", email);
                         cmd.Parameters.AddWithValue("@PasswordHash", password);
 
-                        int rowsAffected = cmd.ExecuteNonQuery();
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
 
-                        if (rowsAffected > 0)
+                        if (count == 1)
                         {
-                            MessageBox.Show("Registration successful!");
-                            ApplicantLogin choiceForm = new ApplicantLogin();
-                            choiceForm.Show();
-                            this.Hide();
-
+                            MessageBox.Show("Login successful!");
                         }
                         else
                         {
-                            MessageBox.Show("Registration failed.");
+                            MessageBox.Show("Invalid username, email, or password.");
                         }
                     }
                 }
@@ -61,14 +70,23 @@ namespace HR_Recruitment_System
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
-
         }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Applicantregistration registerForm = new Applicantregistration();
+            registerForm.Show();
+            this.Hide();
+        }
+
+
 
         private void Back(object sender, EventArgs e)
         {
-            ApplicantLogin choiceForm = new ApplicantLogin();
+            Choice choiceForm = new Choice();
             choiceForm.Show();
             this.Hide();
         }
     }
+
 }
