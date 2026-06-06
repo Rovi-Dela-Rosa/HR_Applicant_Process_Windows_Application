@@ -22,13 +22,13 @@ namespace HR_Recruitment_System
         {
             string username = richTextBox1.Text.Trim();
             string email = richTextBox2.Text.Trim();
-            string password = richTextBox3.Text; // Assuming plain text input
+            string password = richTextBox3.Text; 
 
             string connString = "server=localhost;database=hr_recruitment_db;uid=root;pwd=DDNLR023;";
 
             using (MySqlConnection conn = new MySqlConnection(connString))
             {
-                // Simple query matching credentials
+                
                 string query = @"SELECT r.RoleName 
                          FROM Users u 
                          JOIN Roles r ON u.RoleID = r.RoleID 
@@ -39,7 +39,7 @@ namespace HR_Recruitment_System
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@username", username);
                 cmd.Parameters.AddWithValue("@email", email);
-                cmd.Parameters.AddWithValue("@password", password); // Comparing raw text
+                cmd.Parameters.AddWithValue("@password", password); 
 
                 try
                 {
