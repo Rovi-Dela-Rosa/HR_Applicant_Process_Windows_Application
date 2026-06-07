@@ -1,6 +1,6 @@
 ﻿namespace ApplicantDocumentsForm
 {
-    partial class Form1
+    partial class ApplicantDocuments
     {
         /// <summary>
         /// Required designer variable.
@@ -34,13 +34,12 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnUpload = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.lblStatus = new System.Windows.Forms.Label();
             this.dgvDocuments = new System.Windows.Forms.DataGridView();
             this.label4 = new System.Windows.Forms.Label();
             this.txtRemarks = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.btnDelete = new System.Windows.Forms.Button();
+            this.btnSubmit = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocuments)).BeginInit();
             this.SuspendLayout();
@@ -53,7 +52,7 @@
             "Valid ID",
             "Transcript",
             "Certificate"});
-            this.cboDocumentType.Location = new System.Drawing.Point(141, 100);
+            this.cboDocumentType.Location = new System.Drawing.Point(141, 129);
             this.cboDocumentType.Name = "cboDocumentType";
             this.cboDocumentType.Size = new System.Drawing.Size(121, 21);
             this.cboDocumentType.TabIndex = 0;
@@ -62,7 +61,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(21, 101);
+            this.label1.Location = new System.Drawing.Point(21, 130);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(114, 16);
             this.label1.TabIndex = 1;
@@ -78,7 +77,6 @@
             this.label2.Size = new System.Drawing.Size(181, 21);
             this.label2.TabIndex = 2;
             this.label2.Text = "APPLICANT DOCUMENTS";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // panel1
             // 
@@ -93,7 +91,7 @@
             // 
             this.btnUpload.BackColor = System.Drawing.SystemColors.Control;
             this.btnUpload.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnUpload.Location = new System.Drawing.Point(394, 90);
+            this.btnUpload.Location = new System.Drawing.Point(302, 119);
             this.btnUpload.Name = "btnUpload";
             this.btnUpload.Size = new System.Drawing.Size(85, 38);
             this.btnUpload.TabIndex = 4;
@@ -105,7 +103,7 @@
             // 
             this.btnRefresh.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRefresh.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnRefresh.Location = new System.Drawing.Point(600, 90);
+            this.btnRefresh.Location = new System.Drawing.Point(515, 119);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(85, 38);
             this.btnRefresh.TabIndex = 5;
@@ -113,32 +111,14 @@
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(21, 170);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(54, 16);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Status:";
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStatus.Location = new System.Drawing.Point(138, 170);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(64, 16);
-            this.lblStatus.TabIndex = 7;
-            this.lblStatus.Text = "Missing:";
-            // 
             // dgvDocuments
             // 
+            this.dgvDocuments.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
             this.dgvDocuments.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvDocuments.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.dgvDocuments.Location = new System.Drawing.Point(24, 245);
             this.dgvDocuments.Name = "dgvDocuments";
-            this.dgvDocuments.Size = new System.Drawing.Size(737, 239);
+            this.dgvDocuments.Size = new System.Drawing.Size(635, 239);
             this.dgvDocuments.TabIndex = 8;
             // 
             // label4
@@ -156,7 +136,7 @@
             this.txtRemarks.Location = new System.Drawing.Point(100, 532);
             this.txtRemarks.Multiline = true;
             this.txtRemarks.Name = "txtRemarks";
-            this.txtRemarks.Size = new System.Drawing.Size(661, 170);
+            this.txtRemarks.Size = new System.Drawing.Size(559, 102);
             this.txtRemarks.TabIndex = 10;
             // 
             // openFileDialog1
@@ -167,7 +147,7 @@
             // 
             this.btnDelete.BackColor = System.Drawing.SystemColors.Control;
             this.btnDelete.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDelete.Location = new System.Drawing.Point(497, 90);
+            this.btnDelete.Location = new System.Drawing.Point(415, 119);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(85, 38);
             this.btnDelete.TabIndex = 11;
@@ -175,26 +155,35 @@
             this.btnDelete.UseVisualStyleBackColor = false;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
-            // Form1
+            // btnSubmit
+            // 
+            this.btnSubmit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSubmit.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnSubmit.Location = new System.Drawing.Point(618, 119);
+            this.btnSubmit.Name = "btnSubmit";
+            this.btnSubmit.Size = new System.Drawing.Size(85, 38);
+            this.btnSubmit.TabIndex = 12;
+            this.btnSubmit.Text = "Submit";
+            this.btnSubmit.UseVisualStyleBackColor = true;
+            // 
+            // ApplicantDocuments
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Azure;
-            this.ClientSize = new System.Drawing.Size(793, 759);
+            this.ClientSize = new System.Drawing.Size(765, 759);
+            this.Controls.Add(this.btnSubmit);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.txtRemarks);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.dgvDocuments);
-            this.Controls.Add(this.lblStatus);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnUpload);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cboDocumentType);
-            this.Name = "Form1";
+            this.Name = "ApplicantDocuments";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocuments)).EndInit();
@@ -211,13 +200,12 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnUpload;
         private System.Windows.Forms.Button btnRefresh;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.DataGridView dgvDocuments;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtRemarks;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnSubmit;
     }
 }
 

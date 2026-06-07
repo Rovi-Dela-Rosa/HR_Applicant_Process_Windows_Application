@@ -1,51 +1,56 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 
 namespace ApplicantDocumentsForm
 {
-    public partial class Form1 : Form
+    public partial class ApplicantDocuments : Form
     {
         private string connectionString =
             "server=localhost;port=3306;database=hr_recruitment_db;uid=root;pwd=KalelSQL123;";
 
         private int applicantID = 1;
 
-        public Form1()
+        public ApplicantDocuments()
         {
             InitializeComponent();
+
+            this.Load += ApplicantDocuments_Load;
+
+            btnUpload.Click += btnUpload_Click;
+            btnRefresh.Click += btnRefresh_Click;
+            btnDelete.Click += btnDelete_Click;
+            btnSubmit.Click += btnSubmit_Click;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        // =========================
+        private void ApplicantDocuments_Load(object sender, EventArgs e)
         {
-            LoadDocumentTypes();
+            LoadRequirementTypes();
             LoadDocuments();
-
-            txtRemarks.ReadOnly = true;
-            txtRemarks.BackColor = SystemColors.Control;
-
-            dgvDocuments.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvDocuments.MultiSelect = false;
         }
 
         // =========================
-        // LOAD TYPES
-        // =========================
-        private void LoadDocumentTypes()
+        private void LoadRequirementTypes()
         {
-            cboDocumentType.Items.Clear();
-            cboDocumentType.Items.Add("Resume");
-            cboDocumentType.Items.Add("Valid ID");
-            cboDocumentType.Items.Add("Transcript");
-            cboDocumentType.Items.Add("Certificate");
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+
+                MySqlDataAdapter da = new MySqlDataAdapter(
+                    "SELECT RequirementTypeID, RequirementName FROM RequirementTypes", conn);
+
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                cboDocumentType.DataSource = dt;
+                cboDocumentType.DisplayMember = "RequirementName";
+                cboDocumentType.ValueMember = "RequirementTypeID";
+                cboDocumentType.SelectedIndex = -1;
+            }
         }
 
-        // =========================
-        // LOAD DOCUMENTS
         // =========================
         private void LoadDocuments()
         {
@@ -54,10 +59,16 @@ namespace ApplicantDocumentsForm
                 conn.Open();
 
                 string query = @"
-                    SELECT DocumentID, DocumentType, FileName, FilePath,
-                           Status, Remarks, DateSubmitted
-                    FROM ApplicantDocuments
-                    WHERE ApplicantID = @ApplicantID";
+                    SELECT d.DocumentID,
+                           r.RequirementName,
+                           d.FilePath,
+                           d.Status,
+                           IFNULL(d.Remarks,'') AS Remarks,
+                           d.DateSubmitted
+                    FROM ApplicantDocuments d
+                    INNER JOIN RequirementTypes r
+                        ON d.RequirementTypeID = r.RequirementTypeID
+                    WHERE d.ApplicantID=@ApplicantID";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@ApplicantID", applicantID);
@@ -68,203 +79,132 @@ namespace ApplicantDocumentsForm
 
                 dgvDocuments.DataSource = dt;
             }
-
-            CheckMissingRequirements();
         }
 
-        // =========================
-        // UPLOAD
-        // =========================
+        
         private void btnUpload_Click(object sender, EventArgs e)
         {
-            try
+            if (cboDocumentType.SelectedValue == null) return;
+
+            int typeID = Convert.ToInt32(cboDocumentType.SelectedValue);
+
+            if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
+
+            string filePath = openFileDialog1.FileName;
+
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                if (cboDocumentType.SelectedIndex == -1)
-                {
-                    MessageBox.Show("Select document type.");
-                    return;
-                }
+                conn.Open();
 
-                if (openFileDialog1.ShowDialog() != DialogResult.OK)
-                    return;
+                string query = @"
+                    UPDATE ApplicantDocuments
+                    SET FilePath=@FilePath,
+                        Status='Uploaded'
+                    WHERE ApplicantID=@ApplicantID
+                    AND RequirementTypeID=@TypeID";
 
-                string sourcePath = openFileDialog1.FileName;
-                string fileName = Path.GetFileName(sourcePath);
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@FilePath", filePath);
+                cmd.Parameters.AddWithValue("@ApplicantID", applicantID);
+                cmd.Parameters.AddWithValue("@TypeID", typeID);
 
-                string uploadsFolder = Path.Combine(Application.StartupPath, "Uploads");
-
-                if (!Directory.Exists(uploadsFolder))
-                    Directory.CreateDirectory(uploadsFolder);
-
-                string destinationPath = Path.Combine(
-                    uploadsFolder,
-                    DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + fileName);
-
-                File.Copy(sourcePath, destinationPath, true);
-
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    string check = @"
-                        SELECT COUNT(*) 
-                        FROM ApplicantDocuments
-                        WHERE ApplicantID=@ApplicantID
-                        AND DocumentType=@DocumentType";
-
-                    MySqlCommand checkCmd = new MySqlCommand(check, conn);
-                    checkCmd.Parameters.AddWithValue("@ApplicantID", applicantID);
-                    checkCmd.Parameters.AddWithValue("@DocumentType", cboDocumentType.Text);
-
-                    bool exists = Convert.ToInt32(checkCmd.ExecuteScalar()) > 0;
-
-                    if (exists)
-                    {
-                        string update = @"
-                            UPDATE ApplicantDocuments
-                            SET FileName=@FileName,
-                                FilePath=@FilePath,
-                                Status='Submitted',
-                                DateSubmitted=NOW()
-                            WHERE ApplicantID=@ApplicantID
-                            AND DocumentType=@DocumentType";
-
-                        MySqlCommand cmd = new MySqlCommand(update, conn);
-                        cmd.Parameters.AddWithValue("@ApplicantID", applicantID);
-                        cmd.Parameters.AddWithValue("@DocumentType", cboDocumentType.Text);
-                        cmd.Parameters.AddWithValue("@FileName", fileName);
-                        cmd.Parameters.AddWithValue("@FilePath", destinationPath);
-
-                        cmd.ExecuteNonQuery();
-                    }
-                    else
-                    {
-                        string insert = @"
-                            INSERT INTO ApplicantDocuments
-                            (ApplicantID, DocumentType, FileName, FilePath, Status)
-                            VALUES
-                            (@ApplicantID, @DocumentType, @FileName, @FilePath, 'Submitted')";
-
-                        MySqlCommand cmd = new MySqlCommand(insert, conn);
-                        cmd.Parameters.AddWithValue("@ApplicantID", applicantID);
-                        cmd.Parameters.AddWithValue("@DocumentType", cboDocumentType.Text);
-                        cmd.Parameters.AddWithValue("@FileName", fileName);
-                        cmd.Parameters.AddWithValue("@FilePath", destinationPath);
-
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-
-                MessageBox.Show("Upload successful!");
-                LoadDocuments();
+                cmd.ExecuteNonQuery();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Upload Error: " + ex.Message);
-            }
+
+            LoadDocuments();
         }
 
-        // =========================
-        // REFRESH
-        // =========================
+        
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (dgvDocuments.CurrentRow == null)
+                return;
+
+            string status = dgvDocuments.CurrentRow.Cells["Status"].Value.ToString();
+
+            
+            if (status == "Submitted")
+            {
+                MessageBox.Show("You cannot delete a submitted document.");
+                return;
+            }
+
+            int documentID = Convert.ToInt32(dgvDocuments.CurrentRow.Cells["DocumentID"].Value);
+
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+
+                string query = @"
+            UPDATE ApplicantDocuments
+            SET FilePath = NULL,
+                Status = 'Missing',
+                Remarks = '',
+                DateSubmitted = NULL
+            WHERE DocumentID = @DocumentID
+            AND ApplicantID = @ApplicantID";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@DocumentID", documentID);
+                cmd.Parameters.AddWithValue("@ApplicantID", applicantID);
+
+                cmd.ExecuteNonQuery();
+            }
+
+            LoadDocuments();
+        }
+
+        
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadDocuments();
-            CheckMissingRequirements();
         }
 
-        // =========================
-        // DELETE (FIXED)
-        // =========================
-        private void btnDelete_Click(object sender, EventArgs e)
+        
+        private void btnSubmit_Click(object sender, EventArgs e)
         {
-            try
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                if (dgvDocuments.SelectedRows.Count == 0)
+                conn.Open();
+
+                string check = @"
+                    SELECT COUNT(*)
+                    FROM ApplicantDocuments
+                    WHERE ApplicantID=@ApplicantID
+                    AND (FilePath IS NULL OR FilePath='')";
+
+                MySqlCommand checkCmd = new MySqlCommand(check, conn);
+                checkCmd.Parameters.AddWithValue("@ApplicantID", applicantID);
+
+                int missing = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                if (missing > 0)
                 {
-                    MessageBox.Show("Select a document first.");
+                    MessageBox.Show("Complete all documents first.");
                     return;
                 }
 
-                DataGridViewRow row = dgvDocuments.SelectedRows[0];
+                string finalizeDocs = @"
+                    UPDATE ApplicantDocuments
+                    SET Status='Submitted',
+                        DateSubmitted=NOW()
+                    WHERE ApplicantID=@ApplicantID";
 
-                int documentID = Convert.ToInt32(row.Cells["DocumentID"].Value);
+                MySqlCommand cmd1 = new MySqlCommand(finalizeDocs, conn);
+                cmd1.Parameters.AddWithValue("@ApplicantID", applicantID);
+                cmd1.ExecuteNonQuery();
 
-                DialogResult result = MessageBox.Show(
-                    "Are you sure you want to delete this document?",
-                    "Confirm Delete",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning);
+                string updateApp = @"
+                    UPDATE Applications
+                    SET CurrentStatus='Submitted'
+                    WHERE ApplicantID=@ApplicantID";
 
-                if (result == DialogResult.No)
-                    return;
-
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    string query = @"
-                        DELETE FROM ApplicantDocuments
-                        WHERE DocumentID=@DocumentID
-                        AND ApplicantID=@ApplicantID";
-
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@DocumentID", documentID);
-                    cmd.Parameters.AddWithValue("@ApplicantID", applicantID);
-
-                    cmd.ExecuteNonQuery();
-                }
-
-                MessageBox.Show("Deleted successfully!");
-                LoadDocuments();
-                CheckMissingRequirements();
+                MySqlCommand cmd2 = new MySqlCommand(updateApp, conn);
+                cmd2.Parameters.AddWithValue("@ApplicantID", applicantID);
+                cmd2.ExecuteNonQuery();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Delete Error: " + ex.Message);
-            }
+
+            LoadDocuments();
         }
-
-        // =========================
-        // SHOW REMARKS
-        // =========================
-        private void dgvDocuments_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
-            {
-                txtRemarks.Text =
-                    dgvDocuments.Rows[e.RowIndex].Cells["Remarks"].Value?.ToString() ?? "";
-            }
-        }
-
-        // =========================
-        // MISSING CHECK
-        // =========================
-        private void CheckMissingRequirements()
-        {
-            List<string> required = new List<string>
-            {
-                "Resume",
-                "Valid ID",
-                "Transcript",
-                "Certificate"
-            };
-
-            foreach (DataGridViewRow row in dgvDocuments.Rows)
-            {
-                if (row.IsNewRow) continue;
-
-                string doc = row.Cells["DocumentType"].Value?.ToString();
-                if (doc != null)
-                    required.Remove(doc);
-            }
-
-            lblStatus.Text = required.Count == 0
-                ? "Status: Complete"
-                : "Missing: " + string.Join(", ", required);
-        }
-
-        // SAFE STUB (prevents designer crash)
-        private void label2_Click(object sender, EventArgs e) { }
     }
 }
