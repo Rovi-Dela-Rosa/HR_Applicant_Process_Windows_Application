@@ -131,7 +131,7 @@ namespace Maintenance_Module
             tabDepartments.Name = "tabDepartments";
             tabDepartments.Size = new Size(962, 497);
             tabDepartments.TabIndex = 0;
-            tabDepartments.Text = "Departments";
+            tabDepartments.Text = "   Departments   ";
 
             //
             // pnlDept
@@ -220,7 +220,7 @@ namespace Maintenance_Module
             tabPositions.Name = "tabPositions";
             tabPositions.Size = new Size(962, 497);
             tabPositions.TabIndex = 1;
-            tabPositions.Text = "Positions";
+            tabPositions.Text = "   Positions   ";
 
             //
             // pnlPos
@@ -309,7 +309,7 @@ namespace Maintenance_Module
             tabEmploymentTypes.Name = "tabEmploymentTypes";
             tabEmploymentTypes.Size = new Size(962, 497);
             tabEmploymentTypes.TabIndex = 2;
-            tabEmploymentTypes.Text = "Employment Types";
+            tabEmploymentTypes.Text = "   Employment Types   ";
 
             //
             // pnlEmp
@@ -398,7 +398,7 @@ namespace Maintenance_Module
             tabRequirementTypes.Name = "tabRequirementTypes";
             tabRequirementTypes.Size = new Size(962, 497);
             tabRequirementTypes.TabIndex = 3;
-            tabRequirementTypes.Text = "Requirement Types";
+            tabRequirementTypes.Text = "   Requirement Types   ";
 
             //
             // pnlReq
@@ -487,7 +487,7 @@ namespace Maintenance_Module
             tabInterviewTypes.Name = "tabInterviewTypes";
             tabInterviewTypes.Size = new Size(962, 497);
             tabInterviewTypes.TabIndex = 4;
-            tabInterviewTypes.Text = "Interview Types";
+            tabInterviewTypes.Text = "   Interview Types   ";
 
             //
             // pnlInt
@@ -576,7 +576,7 @@ namespace Maintenance_Module
             tabAssessmentTypes.Name = "tabAssessmentTypes";
             tabAssessmentTypes.Size = new Size(962, 497);
             tabAssessmentTypes.TabIndex = 5;
-            tabAssessmentTypes.Text = "Assessment Types";
+            tabAssessmentTypes.Text = "   Assessment Types   ";
 
             //
             // pnlAss
