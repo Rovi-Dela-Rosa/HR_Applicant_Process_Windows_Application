@@ -53,6 +53,7 @@
             btnSave = new Button();
             btnUpdate = new Button();
             groupBox2 = new GroupBox();
+            btnDashboard = new Button();
             grpPersonalInfo.SuspendLayout();
             grpContact.SuspendLayout();
             grpEducation.SuspendLayout();
@@ -299,12 +300,24 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Skills";
             // 
+            // btnDashboard
+            // 
+            btnDashboard.BackColor = Color.Honeydew;
+            btnDashboard.Location = new Point(58, 595);
+            btnDashboard.Name = "btnDashboard";
+            btnDashboard.Size = new Size(94, 29);
+            btnDashboard.TabIndex = 8;
+            btnDashboard.Text = "Dashboard";
+            btnDashboard.UseVisualStyleBackColor = false;
+            btnDashboard.Click += btnDashboard_Click;
+            // 
             // ApplicantProfileForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Azure;
             ClientSize = new Size(982, 653);
+            Controls.Add(btnDashboard);
             Controls.Add(groupBox2);
             Controls.Add(btnUpdate);
             Controls.Add(btnSave);
@@ -370,5 +383,6 @@
         private GroupBox groupBox1;
         private TextBox txtEducation;
         private GroupBox groupBox2;
+        private Button btnDashboard;
     }
 }

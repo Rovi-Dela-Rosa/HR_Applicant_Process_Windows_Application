@@ -50,6 +50,20 @@ namespace HR_RecruitmentSystem
         public ApplicantProfileForm()
         {
             InitializeComponent();
+
+            var found1 = this.Controls.Find("button1", true);
+            if (found1.Length > 0 && found1[0] is Button btn1)
+            {
+                btn1.BackColor = Color.SteelBlue;
+                btn1.ForeColor = Color.White;
+            }
+
+            var found3 = this.Controls.Find("button3", true);
+            if (found3.Length > 0 && found3[0] is Button btn3)
+            {
+                btn3.BackColor = Color.MidnightBlue;
+                btn3.ForeColor = Color.White;
+            }
         }
 
         private void txtEmail_TextChanged(object sender, EventArgs e)
@@ -189,6 +203,16 @@ namespace HR_RecruitmentSystem
         private void txtFirstName_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnDashboard_Click(object sender, EventArgs e)
+        {
+            ApplicantDashboardForm dashboard =
+                new ApplicantDashboardForm();
+
+            dashboard.Show();
+
+            this.Hide();
         }
     }
 }
