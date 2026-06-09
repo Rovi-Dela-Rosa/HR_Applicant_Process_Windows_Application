@@ -24,12 +24,12 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             string email = richTextBox2.Text.Trim();
             string password = richTextBox3.Text;
 
-            string connString = "server=localhost;database=hr_recruitment_db;uid=root;pwd=ivor_blunt00;";
+            string connString = "server=localhost;database=hr_recruitment_db;uid=root;pwd=DDNLR023;";
 
             using (MySqlConnection conn = new MySqlConnection(connString))
             {
 
-                string query = @"SELECT r.RoleName 
+                string query = @"SELECT u.RoleID
                          FROM Users u 
                          JOIN Roles r ON u.RoleID = r.RoleID 
                          WHERE u.Username = @username 
@@ -48,13 +48,13 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
                     if (result != null)
                     {
-                        string role = result.ToString();
+                        int roleID = Convert.ToInt32(result);
 
-                        if (role == "Admin")
+                        if (roleID == 1)
                         {
                             new HRAdminDashboard().Show();
                         }
-                        else
+                        else if (roleID == 2)
                         {
                             new Hrstaff().Show();
                         }

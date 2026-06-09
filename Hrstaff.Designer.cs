@@ -94,6 +94,7 @@
             label2.Size = new Size(118, 25);
             label2.TabIndex = 1;
             label2.Text = "Applicant List";
+            label2.Click += ApplicantList;
             // 
             // label3
             // 
@@ -105,6 +106,7 @@
             label3.Size = new Size(146, 25);
             label3.TabIndex = 2;
             label3.Text = "Applicant Review";
+            label3.Click += ApplicantReview;
             // 
             // label4
             // 
@@ -116,6 +118,7 @@
             label4.Size = new Size(89, 25);
             label4.TabIndex = 2;
             label4.Text = "Screening";
+            label4.Click += Screening;
             // 
             // label5
             // 
@@ -127,6 +130,7 @@
             label5.Size = new Size(159, 25);
             label5.TabIndex = 3;
             label5.Text = "Interview Schedule";
+            label5.Click += InterviewSched;
             // 
             // label6
             // 
@@ -138,6 +142,7 @@
             label6.Size = new Size(169, 25);
             label6.TabIndex = 4;
             label6.Text = "Interview Evaluation";
+            label6.Click += InterviewEval;
             // 
             // label7
             // 
@@ -159,6 +164,7 @@
             label8.Size = new Size(73, 25);
             label8.TabIndex = 6;
             label8.Text = "Reports";
+            label8.Click += Reports;
             // 
             // label9
             // 

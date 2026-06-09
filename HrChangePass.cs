@@ -11,7 +11,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 {
     public partial class HrChangePass : Form
     {
-        string connectionString = "server=localhost;database=hr_recruitment_db;uid=root;pwd=ivor_blunt00;";
+        string connectionString = "server=localhost;database=hr_recruitment_db;uid=root;pwd=DDNLR023;";
         public HrChangePass()
         {
             InitializeComponent();
