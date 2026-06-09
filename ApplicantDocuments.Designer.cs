@@ -41,6 +41,7 @@
             txtRemarks = new TextBox();
             openFileDialog1 = new OpenFileDialog();
             btnDelete = new Button();
+            btnBack = new Button();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvDocuments).BeginInit();
             SuspendLayout();
@@ -71,7 +72,7 @@
             label2.AutoSize = true;
             label2.Font = new Font("Cascadia Mono", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label2.ForeColor = SystemColors.Control;
-            label2.Location = new Point(397, 28);
+            label2.Location = new Point(399, 33);
             label2.Margin = new Padding(4, 0, 4, 0);
             label2.Name = "label2";
             label2.Size = new Size(240, 27);
@@ -93,7 +94,7 @@
             // 
             btnUpload.BackColor = SystemColors.Control;
             btnUpload.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnUpload.Location = new Point(525, 138);
+            btnUpload.Location = new Point(467, 136);
             btnUpload.Margin = new Padding(4, 5, 4, 5);
             btnUpload.Name = "btnUpload";
             btnUpload.Size = new Size(113, 58);
@@ -106,7 +107,7 @@
             // 
             btnRefresh.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnRefresh.ForeColor = SystemColors.ControlText;
-            btnRefresh.Location = new Point(800, 138);
+            btnRefresh.Location = new Point(729, 136);
             btnRefresh.Margin = new Padding(4, 5, 4, 5);
             btnRefresh.Name = "btnRefresh";
             btnRefresh.Size = new Size(113, 58);
@@ -139,8 +140,10 @@
             // 
             // dgvDocuments
             // 
+            dgvDocuments.BackgroundColor = Color.Azure;
             dgvDocuments.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvDocuments.Location = new Point(32, 377);
+            dgvDocuments.GridColor = Color.Azure;
+            dgvDocuments.Location = new Point(28, 339);
             dgvDocuments.Margin = new Padding(4, 5, 4, 5);
             dgvDocuments.Name = "dgvDocuments";
             dgvDocuments.RowHeadersWidth = 51;
@@ -151,7 +154,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label4.Location = new Point(28, 818);
+            label4.Location = new Point(28, 780);
             label4.Margin = new Padding(4, 0, 4, 0);
             label4.Name = "label4";
             label4.Size = new Size(89, 20);
@@ -160,7 +163,7 @@
             // 
             // txtRemarks
             // 
-            txtRemarks.Location = new Point(133, 818);
+            txtRemarks.Location = new Point(125, 777);
             txtRemarks.Margin = new Padding(4, 5, 4, 5);
             txtRemarks.Multiline = true;
             txtRemarks.Name = "txtRemarks";
@@ -175,7 +178,7 @@
             // 
             btnDelete.BackColor = SystemColors.Control;
             btnDelete.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnDelete.Location = new Point(663, 138);
+            btnDelete.Location = new Point(598, 136);
             btnDelete.Margin = new Padding(4, 5, 4, 5);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(113, 58);
@@ -184,12 +187,25 @@
             btnDelete.UseVisualStyleBackColor = false;
             btnDelete.Click += btnDelete_Click;
             // 
-            // Form1
+            // btnBack
+            // 
+            btnBack.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold);
+            btnBack.ForeColor = SystemColors.ControlText;
+            btnBack.Location = new Point(862, 136);
+            btnBack.Name = "btnBack";
+            btnBack.Size = new Size(113, 58);
+            btnBack.TabIndex = 12;
+            btnBack.Text = "Back";
+            btnBack.UseVisualStyleBackColor = true;
+            btnBack.Click += btnBack_Click;
+            // 
+            // ApplicantDocuments
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Azure;
             ClientSize = new Size(1057, 1055);
+            Controls.Add(btnBack);
             Controls.Add(btnDelete);
             Controls.Add(txtRemarks);
             Controls.Add(label4);
@@ -202,7 +218,7 @@
             Controls.Add(label1);
             Controls.Add(cboDocumentType);
             Margin = new Padding(4, 5, 4, 5);
-            Name = "Form1";
+            Name = "ApplicantDocuments";
             Text = "Form1";
             Load += Form1_Load;
             panel1.ResumeLayout(false);
@@ -228,6 +244,7 @@
         private System.Windows.Forms.TextBox txtRemarks;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button btnDelete;
+        private Button btnBack;
     }
 }
 

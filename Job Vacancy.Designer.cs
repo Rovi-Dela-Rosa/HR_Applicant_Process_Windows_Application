@@ -24,8 +24,8 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
             headerPanel = new Panel();
             lblTitle = new Label();
             lblSearch = new Label();
@@ -51,6 +51,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             btnApply = new Button();
             btnRefresh = new Button();
             btnExit = new Button();
+            button1 = new Button();
             headerPanel.SuspendLayout();
             grpDetails.SuspendLayout();
             groupBox2.SuspendLayout();
@@ -62,6 +63,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             // 
             headerPanel.BackColor = Color.WhiteSmoke;
             headerPanel.BackgroundImageLayout = ImageLayout.None;
+            headerPanel.Controls.Add(button1);
             headerPanel.Controls.Add(lblTitle);
             headerPanel.Dock = DockStyle.Top;
             headerPanel.Location = new Point(0, 0);
@@ -77,7 +79,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             lblTitle.BackColor = Color.Transparent;
             lblTitle.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
             lblTitle.ForeColor = SystemColors.ControlText;
-            lblTitle.Location = new Point(25, 25);
+            lblTitle.Location = new Point(375, 29);
             lblTitle.Name = "lblTitle";
             lblTitle.Size = new Size(238, 46);
             lblTitle.TabIndex = 0;
@@ -219,24 +221,24 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             dgvJobs.BackgroundColor = Color.White;
             dgvJobs.BorderStyle = BorderStyle.None;
             dgvJobs.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(25, 118, 210);
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            dataGridViewCellStyle1.ForeColor = Color.White;
-            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            dgvJobs.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = Color.FromArgb(25, 118, 210);
+            dataGridViewCellStyle3.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            dataGridViewCellStyle3.ForeColor = Color.White;
+            dataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.True;
+            dgvJobs.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             dgvJobs.ColumnHeadersHeight = 30;
             dgvJobs.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2, dataGridViewTextBoxColumn3, dataGridViewTextBoxColumn4, dataGridViewTextBoxColumn5 });
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = Color.White;
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            dataGridViewCellStyle2.ForeColor = Color.FromArgb(0, 102, 204);
-            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(219, 234, 254);
-            dataGridViewCellStyle2.SelectionForeColor = Color.Black;
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
-            dgvJobs.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = Color.White;
+            dataGridViewCellStyle4.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            dataGridViewCellStyle4.ForeColor = Color.FromArgb(0, 102, 204);
+            dataGridViewCellStyle4.SelectionBackColor = Color.FromArgb(219, 234, 254);
+            dataGridViewCellStyle4.SelectionForeColor = Color.Black;
+            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.False;
+            dgvJobs.DefaultCellStyle = dataGridViewCellStyle4;
             dgvJobs.EnableHeadersVisualStyles = false;
             dgvJobs.GridColor = Color.LightGray;
             dgvJobs.Location = new Point(15, 44);
@@ -244,11 +246,12 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             dgvJobs.Name = "dgvJobs";
             dgvJobs.RowHeadersWidth = 51;
             dgvJobs.RowTemplate.Height = 28;
-            dgvJobs.Size = new Size(856, 175);
+            dgvJobs.Size = new Size(885, 175);
             dgvJobs.TabIndex = 1;
             // 
             // dataGridViewTextBoxColumn1
             // 
+            dataGridViewTextBoxColumn1.DataPropertyName = "VacancyID";
             dataGridViewTextBoxColumn1.HeaderText = "Job ID";
             dataGridViewTextBoxColumn1.MinimumWidth = 6;
             dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
@@ -256,6 +259,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             // 
             // dataGridViewTextBoxColumn2
             // 
+            dataGridViewTextBoxColumn2.DataPropertyName = "JobTitle";
             dataGridViewTextBoxColumn2.HeaderText = "Position";
             dataGridViewTextBoxColumn2.MinimumWidth = 6;
             dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
@@ -263,6 +267,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             // 
             // dataGridViewTextBoxColumn3
             // 
+            dataGridViewTextBoxColumn3.DataPropertyName = "Department";
             dataGridViewTextBoxColumn3.HeaderText = "Department";
             dataGridViewTextBoxColumn3.MinimumWidth = 6;
             dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
@@ -270,6 +275,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             // 
             // dataGridViewTextBoxColumn4
             // 
+            dataGridViewTextBoxColumn4.DataPropertyName = "EmploymentType";
             dataGridViewTextBoxColumn4.HeaderText = "Type";
             dataGridViewTextBoxColumn4.MinimumWidth = 6;
             dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
@@ -277,6 +283,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             // 
             // dataGridViewTextBoxColumn5
             // 
+            dataGridViewTextBoxColumn5.DataPropertyName = "Status";
             dataGridViewTextBoxColumn5.HeaderText = "Status";
             dataGridViewTextBoxColumn5.MinimumWidth = 6;
             dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
@@ -354,6 +361,19 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             btnExit.Text = "Exit";
             btnExit.UseVisualStyleBackColor = false;
             // 
+            // button1
+            // 
+            button1.BackColor = Color.MidnightBlue;
+            button1.Font = new Font("Segoe UI", 7F);
+            button1.ForeColor = Color.White;
+            button1.Location = new Point(26, 45);
+            button1.Name = "button1";
+            button1.Size = new Size(77, 30);
+            button1.TabIndex = 4;
+            button1.Text = "← Back";
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += button1_Click;
+            // 
             // JobVacancies
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -415,6 +435,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+        private Button button1;
     }
 }
 

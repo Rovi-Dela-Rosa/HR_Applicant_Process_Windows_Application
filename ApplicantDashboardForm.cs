@@ -10,12 +10,12 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 {
     public partial class ApplicantDashboardForm : Form
     {
-        private int currentApplicantID;
-        private int realApplicantID = 0;
-        public ApplicantDashboardForm(int applicantID)
+        private int loggedInAccountID;
+        private int realApplicantID;
+        public ApplicantDashboardForm(int accountID)
         {
             InitializeComponent();
-            this.currentApplicantID = applicantID;
+            this.loggedInAccountID = accountID;
 
             // ACTIVE BUTTON
             btnDashboard.BackColor = Color.SteelBlue;
@@ -60,7 +60,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                     string profileQuery = @"SELECT ApplicantID, FirstName, LastName FROM Applicants WHERE AccountID = @AccountID";
                     using (MySqlCommand cmd = new MySqlCommand(profileQuery, conn))
                     {
-                        cmd.Parameters.AddWithValue("@AccountID", this.currentApplicantID);
+                        cmd.Parameters.AddWithValue("@AccountID", this.loggedInAccountID);
                         using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
@@ -76,109 +76,21 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                             }
                             else
                             {
+                                this.realApplicantID = 0;
                                 lblWelcome.Text = "Welcome, New Applicant!";
-                                MessageBox.Show("Please complete your profile first in 'My Profile' before applying.", "Profile Incomplete", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                                 btnJobVacancy.Enabled = false;
                                 btnMyApplication.Enabled = false;
                                 btnMyDocuments.Enabled = false;
                                 btnApplicationStatus.Enabled = false;
-                                return;
                             }
                         }
-                    }
-
-                    string statusQuery = @"SELECT CurrentStatus, ApplicationID FROM Applications WHERE ApplicantID = @ApplicantID LIMIT 1";
-                    int applicationID = 0;
-                    using (MySqlCommand cmd = new MySqlCommand(statusQuery, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@ApplicantID", this.realApplicantID);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-
-                                lblCurrentStatus.Text = $"Current Status: {reader["CurrentStatus"]}";
-                                applicationID = Convert.ToInt32(reader["ApplicationID"]);
-                            }
-                            else
-                            {
-                                lblCurrentStatus.Text = "Current Status: No Active Application";
-                            }
-                        }
-                    }
-
-
-                    lstMissingDocuments.Items.Clear();
-                    string docsQuery = @"SELECT rt.RequirementName FROM ApplicantDocuments ad
-                                         INNER JOIN RequirementTypes rt ON ad.RequirementTypeID = rt.RequirementTypeID
-                                         WHERE ad.ApplicantID = @ApplicantID AND ad.Status = 'Rejected'";
-                    using (MySqlCommand cmd = new MySqlCommand(docsQuery, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@ApplicantID", this.realApplicantID);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                lstMissingDocuments.Items.Add(reader["RequirementName"].ToString());
-                            }
-                        }
-                    }
-                    if (lstMissingDocuments.Items.Count == 0 && applicationID > 0)
-                    {
-                        lstMissingDocuments.Items.Add("All required documents are verified.");
-                    }
-
-
-                    string interviewQuery = @"SELECT i.InterviewDate, i.Location, t.TypeName FROM InterviewSchedules i
-                                             INNER JOIN InterviewTypes t ON i.InterviewTypeID = t.InterviewTypeID
-                                             WHERE i.ApplicationID = @ApplicationID AND i.Status = 'Scheduled' LIMIT 1";
-                    using (MySqlCommand cmd = new MySqlCommand(interviewQuery, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@ApplicationID", applicationID);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                DateTime schedDate = Convert.ToDateTime(reader["InterviewDate"]);
-                                lblInterviewDate.Text = $"Date: {schedDate.ToString("MMMM dd, yyyy")}";
-                                lblInterviewTime.Text = $"Time: {schedDate.ToString("hh:mm tt")}";
-                                lblInterviewLocation.Text = $"Location: {reader["Location"]} ({reader["TypeName"]})";
-                            }
-                            else
-                            {
-                                lblInterviewDate.Text = "Date: No interview scheduled yet.";
-                                lblInterviewTime.Text = "Time: --:--";
-                                lblInterviewLocation.Text = "Location: ----";
-                            }
-                        }
-                    }
-
-                    lstRecentUpdates.Items.Clear();
-                    string historyQuery = @"SELECT Status, Remarks, ChangedAt FROM ApplicationStatusHistory 
-                                            WHERE ApplicationID = @ApplicationID ORDER BY ChangedAt DESC LIMIT 5";
-                    using (MySqlCommand cmd = new MySqlCommand(historyQuery, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@ApplicationID", applicationID);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                DateTime changeDate = Convert.ToDateTime(reader["ChangedAt"]);
-                                string statusText = $"{changeDate.ToString("MM/dd")} - {reader["Status"]}: {reader["Remarks"]}";
-                                lstRecentUpdates.Items.Add(statusText);
-                            }
-                        }
-                    }
-                    if (lstRecentUpdates.Items.Count == 0)
-                    {
-                        lstRecentUpdates.Items.Add("No recent status activity updates found.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Dashboard error loading data: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Dashboard error loading profile: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void InitializeComponent()
@@ -358,9 +270,9 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             lblWelcome.ForeColor = SystemColors.ControlText;
             lblWelcome.Location = new Point(34, 21);
             lblWelcome.Name = "lblWelcome";
-            lblWelcome.Size = new Size(360, 38);
+            lblWelcome.Size = new Size(289, 38);
             lblWelcome.TabIndex = 4;
-            lblWelcome.Text = "Welcome Back, Applicant!";
+            lblWelcome.Text = "Welcome, Applicant!";
             // 
             // pnlUpdates
             // 
@@ -589,29 +501,108 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
         private void LoadCurrentStatus()
         {
+            lstMissingDocuments.Items.Clear();
+            lstRecentUpdates.Items.Clear();
+
             try
             {
                 using (var conn = DatabaseConnection.GetConnection())
                 {
                     conn.Open();
 
-                    string query =
-                        "SELECT CurrentStatus FROM Applications LIMIT 1";
+                    string statusQuery = @"SELECT CurrentStatus, ApplicationID FROM Applications WHERE ApplicantID = @ApplicantID LIMIT 1";
+                    int applicationID = 0;
 
-                    MySqlCommand cmd =
-                        new MySqlCommand(query, conn);
-
-                    object result = cmd.ExecuteScalar();
-
-                    if (result != null)
+                    using (MySqlCommand cmd = new MySqlCommand(statusQuery, conn))
                     {
-                        lblStatus.Text = result.ToString();
+                        cmd.Parameters.AddWithValue("@ApplicantID", this.realApplicantID);
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                lblCurrentStatus.Text = $"Current Status: {reader["CurrentStatus"]}";
+                                applicationID = Convert.ToInt32(reader["ApplicationID"]);
+                            }
+                            else
+                            {
+                                lblCurrentStatus.Text = "Current Status: No Active Application";
+                            }
+                        }
+                    }
+
+                    string docsQuery = @"SELECT rt.RequirementName FROM ApplicantDocuments ad
+                                         INNER JOIN RequirementTypes rt ON ad.RequirementTypeID = rt.RequirementTypeID
+                                         WHERE ad.ApplicantID = @ApplicantID AND ad.Status = 'Rejected'";
+                    using (MySqlCommand cmd = new MySqlCommand(docsQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ApplicantID", this.realApplicantID);
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                lstMissingDocuments.Items.Add(reader["RequirementName"].ToString());
+                            }
+                        }
+                    }
+
+                    if (lstMissingDocuments.Items.Count == 0 && applicationID > 0)
+                    {
+                        lstMissingDocuments.Items.Add("All required documents are verified.");
+                    }
+                    else if (applicationID == 0)
+                    {
+                        lstMissingDocuments.Items.Add("No documents submitted yet.");
+                    }
+
+                    string interviewQuery = @"SELECT i.InterviewDate, i.Location, t.TypeName FROM InterviewSchedules i
+                                             INNER JOIN InterviewTypes t ON i.InterviewTypeID = t.InterviewTypeID
+                                             WHERE i.ApplicationID = @ApplicationID AND i.Status = 'Scheduled' LIMIT 1";
+                    using (MySqlCommand cmd = new MySqlCommand(interviewQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ApplicationID", applicationID);
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                DateTime schedDate = Convert.ToDateTime(reader["InterviewDate"]);
+                                lblInterviewDate.Text = $"Date: {schedDate.ToString("MMMM dd, yyyy")}";
+                                lblInterviewTime.Text = $"Time: {schedDate.ToString("hh:mm tt")}";
+                                lblInterviewLocation.Text = $"Location: {reader["Location"]} ({reader["TypeName"]})";
+                            }
+                            else
+                            {
+                                lblInterviewDate.Text = "Date: No interview scheduled yet.";
+                                lblInterviewTime.Text = "Time: --:--";
+                                lblInterviewLocation.Text = "Location: ----";
+                            }
+                        }
+                    }
+
+                    string historyQuery = @"SELECT Status, Remarks, ChangedAt FROM ApplicationStatusHistory 
+                                            WHERE ApplicationID = @ApplicationID ORDER BY ChangedAt DESC LIMIT 5";
+                    using (MySqlCommand cmd = new MySqlCommand(historyQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ApplicationID", applicationID);
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                DateTime changeDate = Convert.ToDateTime(reader["ChangedAt"]);
+                                string statusText = $"{changeDate.ToString("MM/dd")} - {reader["Status"]}: {reader["Remarks"]}";
+                                lstRecentUpdates.Items.Add(statusText);
+                            }
+                        }
+                    }
+
+                    if (lstRecentUpdates.Items.Count == 0)
+                    {
+                        lstRecentUpdates.Items.Add("No recent status activity updates found.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Dashboard error loading operational data: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -629,25 +620,22 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private void ApplicantDashboardForm_Load(object sender, EventArgs e)
         {
             LoadApplicantProfileAndSummary();
+
+            if (this.realApplicantID == 0)
+            {
+                ApplicantProfileForm profileForm = new ApplicantProfileForm(this.loggedInAccountID);
+                profileForm.Show();
+
+                this.BeginInvoke(new MethodInvoker(this.Close));
+                return;
+            }
+
             LoadCurrentStatus();
-
-            lblStatus.Text = "Under Review";
-
-            lstMissingDocuments.Items.Add("Resume");
-            lstMissingDocuments.Items.Add("Transcript of Records");
-
-            lblInterviewDate.Text = "Date: June 20, 2026";
-            lblInterviewTime.Text = "Time: 10:00 AM";
-            lblInterviewLocation.Text = "Location: HR Office";
-
-            lstRecentUpdates.Items.Add("Application submitted.");
-            lstRecentUpdates.Items.Add("Documents verified.");
-            lstRecentUpdates.Items.Add("Interview scheduled.");
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ApplicantProfileForm profileForm = new ApplicantProfileForm(this.currentApplicantID);
+            ApplicantProfileForm profileForm = new ApplicantProfileForm(this.loggedInAccountID);
             profileForm.Show();
             this.Hide();
         }
@@ -669,6 +657,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         {
             JobVacancies jobvacanciesWindow = new JobVacancies(this.realApplicantID);
             jobvacanciesWindow.Show();
+            this.Hide();
 
         }
 
@@ -679,6 +668,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         {
             ApplicantDocuments ApplicantDocumentsWindow = new ApplicantDocuments(this.realApplicantID);
             ApplicantDocumentsWindow.Show();
+            this.Hide();
         }
 
         private Button btnApplicationStatus;
@@ -687,13 +677,14 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         {
             ApplicationStatusForm ApplicationStatusWindow = new ApplicationStatusForm(this.realApplicantID);
             ApplicationStatusWindow.Show();
+            this.Hide();
         }
 
         private void btnMyApplication_Click(object sender, EventArgs e)
         {
             MyApplicationPage ApplicationPageWindow = new MyApplicationPage(this.realApplicantID);
             ApplicationPageWindow.Show();
-            this.Close();
+            this.Hide();
         }
     }
 }

@@ -4,11 +4,13 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace HR_Applicant_Process_Windows_System_MAIN
 {
     public partial class JobVacancies : Form
     {
+        private int loggedInAccountID;
         private int currentApplicantID;
         private void dgvJobs_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
@@ -16,10 +18,10 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             {
                 DataGridViewRow row = dgvJobs.Rows[e.RowIndex];
 
-                lblPosition.Text = "Position: " + (row.Cells["JobTitle"].Value?.ToString() ?? "");
-                lblDepartment.Text = "Department: " + (row.Cells["Department"].Value?.ToString() ?? "");
-                lblType.Text = "Employment Type: " + (row.Cells["EmploymentType"].Value?.ToString() ?? "");
-                lblQualifications.Text = "Qualifications: " + (row.Cells["Qualifications"].Value?.ToString() ?? "");
+                lblPosition.Text = "Position: " + (row.Cells[1].Value?.ToString() ?? "");
+                lblDepartment.Text = "Department: " + (row.Cells[2].Value?.ToString() ?? "");
+                lblType.Text = "Employment Type: " + (row.Cells[3].Value?.ToString() ?? "");
+                lblQualifications.Text = "Qualifications: " + (row.Cells[5].Value?.ToString() ?? "");
 
                 lblDocuments.Text = "Required Documents: Please see 'My Documents' page for submission requirements.";
             }
@@ -39,10 +41,50 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             }
         }
 
-        public JobVacancies(int ApplicantID)
+        public JobVacancies(int loggedInID)
         {
             InitializeComponent();
-            this.currentApplicantID = ApplicantID;
+            dgvJobs.AutoGenerateColumns = false;
+
+            this.loggedInAccountID = loggedInID;
+
+            try
+            {
+                using (var conn = DatabaseConnection.GetConnection())
+                {
+                    conn.Open();
+
+                    string query = "SELECT ApplicantID FROM Applicants WHERE AccountID = @AccountID";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@AccountID", this.loggedInAccountID);
+
+                        object result = cmd.ExecuteScalar();
+
+                        if (result != null)
+                        {
+                            this.currentApplicantID = Convert.ToInt32(result);
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                "Please complete your profile first before applying.",
+                                "Profile Required",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+
+                            this.Close();
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading applicant profile: " + ex.Message);
+            }
 
             searchPanel.BackColor = Color.FromArgb(250, 250, 250);
             headerPanel.BackColor = Color.FromArgb(25, 118, 210);
@@ -167,6 +209,27 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                             }
                         }
 
+                        string vacancyCheck = "SELECT JobStatus FROM JobVacancies WHERE VacancyID = @VacancyID";
+
+                        using (MySqlCommand statusCmd = new MySqlCommand(vacancyCheck, conn))
+                        {
+                            statusCmd.Parameters.AddWithValue("@VacancyID", selectedVacancyID);
+
+                            string status = statusCmd.ExecuteScalar()?.ToString() ?? "";
+
+                            if (status.Trim().ToLower() != "open")
+                            {
+                                MessageBox.Show(
+                                    "This vacancy is already closed.",
+                                    "Unavailable",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning
+                                );
+
+                                return;
+                            }
+                        }
+
                         string insertQuery = @"INSERT INTO Applications (ApplicantID, VacancyID, CurrentStatus, AppliedDate) 
                                                VALUES (@ApplicantID, @VacancyID, @CurrentStatus, NOW())";
 
@@ -201,19 +264,12 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private void btnRefresh_Click(object? sender, EventArgs e)
         {
             txtSearch.Clear();
-
-            foreach (DataGridViewRow row in dgvJobs.Rows)
-            {
-                if (!row.IsNewRow)
-                {
-                    row.Visible = true;
-                }
-            }
+            LoadJobsFromDatabase();
         }
 
         private void btnExit_Click(object? sender, EventArgs e)
         {
-            ApplicantDashboardForm dashboard = new ApplicantDashboardForm (currentApplicantID);
+            ApplicantDashboardForm dashboard = new ApplicantDashboardForm(loggedInAccountID);
             dashboard.Show();
             this.Close();
         }
@@ -221,6 +277,14 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private void headerPanel_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ApplicantDashboardForm dashboard = new ApplicantDashboardForm(this.currentApplicantID);
+            dashboard.Show();
+
+            this.Close();
         }
     }
 }

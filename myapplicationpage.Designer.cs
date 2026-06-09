@@ -52,6 +52,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             btnEdit = new Button();
             btnSubmit = new Button();
             btnSaveDraft = new Button();
+            btnBack = new Button();
             panelHeader.SuspendLayout();
             panelWorkspace.SuspendLayout();
             groupBox2.SuspendLayout();
@@ -83,6 +84,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             // 
             // panelWorkspace
             // 
+            panelWorkspace.Controls.Add(btnBack);
             panelWorkspace.Controls.Add(groupBox2);
             panelWorkspace.Controls.Add(groupBox1);
             panelWorkspace.Controls.Add(btnEdit);
@@ -252,7 +254,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             // btnEdit
             // 
             btnEdit.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnEdit.Location = new Point(594, 627);
+            btnEdit.Location = new Point(560, 627);
             btnEdit.Margin = new Padding(3, 4, 3, 4);
             btnEdit.Name = "btnEdit";
             btnEdit.Size = new Size(171, 51);
@@ -264,7 +266,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             // btnSubmit
             // 
             btnSubmit.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnSubmit.Location = new Point(366, 627);
+            btnSubmit.Location = new Point(348, 627);
             btnSubmit.Margin = new Padding(3, 4, 3, 4);
             btnSubmit.Name = "btnSubmit";
             btnSubmit.Size = new Size(206, 51);
@@ -285,6 +287,19 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             btnSaveDraft.Text = "Save Draft";
             btnSaveDraft.UseVisualStyleBackColor = false;
             btnSaveDraft.Click += btnSaveDraft_Click;
+            // 
+            // btnBack
+            // 
+            btnBack.BackColor = Color.MidnightBlue;
+            btnBack.Font = new Font("Segoe UI", 7.5F);
+            btnBack.ForeColor = Color.White;
+            btnBack.Location = new Point(97, 640);
+            btnBack.Name = "btnBack";
+            btnBack.Size = new Size(68, 26);
+            btnBack.TabIndex = 6;
+            btnBack.Text = "← Back";
+            btnBack.UseVisualStyleBackColor = false;
+            btnBack.Click += btnBack_Click;
             // 
             // MyApplicationPage
             // 
@@ -328,5 +343,6 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private Label lblResumePath;
         private Button btnBrowseTranscript;
         private Label lblTranscriptPath;
+        private Button btnBack;
     }
 }

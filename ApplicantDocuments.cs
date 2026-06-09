@@ -4,16 +4,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using HR_Applicant_Process_Windows_System_MAIN.Database;
 using System.Windows.Forms;
 
 namespace HR_Applicant_Process_Windows_System_MAIN
 {
     public partial class ApplicantDocuments : Form
     {
-        private string connectionString =
-            "server=localhost;port=3306;database=hr_recruitment_db;uid=root;pwd=ivor_blunt00;";
-
-        private int applicantID = 1;
+        private int applicantID;
 
         public ApplicantDocuments(int dynamicID)
         {
@@ -50,15 +48,20 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         // =========================
         private void LoadDocuments()
         {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            using (MySqlConnection conn = DatabaseConnection.GetConnection())
             {
                 conn.Open();
 
                 string query = @"
-                    SELECT DocumentID, DocumentType, FileName, FilePath,
-                           Status, Remarks, DateSubmitted
-                    FROM ApplicantDocuments
-                    WHERE ApplicantID = @ApplicantID";
+                SELECT 
+                    ad.DocumentID,
+                    rt.RequirementName AS DocumentType,
+                    ad.FilePath,
+                    ad.Status
+                FROM ApplicantDocuments ad
+                INNER JOIN RequirementTypes rt
+                     ON ad.RequirementTypeID = rt.RequirementTypeID
+                WHERE ad.ApplicantID = @ApplicantID";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@ApplicantID", applicantID);
@@ -103,37 +106,56 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
                 File.Copy(sourcePath, destinationPath, true);
 
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (MySqlConnection conn = DatabaseConnection.GetConnection())
                 {
                     conn.Open();
+
+                    int requirementTypeID = 0;
+
+                    string typeQuery = @"
+                        SELECT RequirementTypeID
+                        FROM RequirementTypes
+                        WHERE RequirementName=@Name";
+
+                    MySqlCommand typeCmd = new MySqlCommand(typeQuery, conn);
+                    typeCmd.Parameters.AddWithValue("@Name", cboDocumentType.Text);
+
+                    object result = typeCmd.ExecuteScalar();
+
+                    if (result != null)
+                    {
+                        requirementTypeID = Convert.ToInt32(result);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Invalid document type.");
+                        return;
+                    }
 
                     string check = @"
                         SELECT COUNT(*) 
                         FROM ApplicantDocuments
                         WHERE ApplicantID=@ApplicantID
-                        AND DocumentType=@DocumentType";
+                        AND RequirementTypeID=@RequirementTypeID";
 
                     MySqlCommand checkCmd = new MySqlCommand(check, conn);
                     checkCmd.Parameters.AddWithValue("@ApplicantID", applicantID);
-                    checkCmd.Parameters.AddWithValue("@DocumentType", cboDocumentType.Text);
+                    checkCmd.Parameters.AddWithValue("@RequirementTypeID", requirementTypeID);
 
                     bool exists = Convert.ToInt32(checkCmd.ExecuteScalar()) > 0;
 
                     if (exists)
                     {
                         string update = @"
-                            UPDATE ApplicantDocuments
-                            SET FileName=@FileName,
-                                FilePath=@FilePath,
-                                Status='Submitted',
-                                DateSubmitted=NOW()
-                            WHERE ApplicantID=@ApplicantID
-                            AND DocumentType=@DocumentType";
+                                UPDATE ApplicantDocuments
+                                SET FilePath=@FilePath,
+                                        Status='Submitted'
+                                WHERE ApplicantID=@ApplicantID
+                                AND RequirementTypeID=@RequirementTypeID";
 
                         MySqlCommand cmd = new MySqlCommand(update, conn);
                         cmd.Parameters.AddWithValue("@ApplicantID", applicantID);
-                        cmd.Parameters.AddWithValue("@DocumentType", cboDocumentType.Text);
-                        cmd.Parameters.AddWithValue("@FileName", fileName);
+                        cmd.Parameters.AddWithValue("@RequirementTypeID", requirementTypeID);
                         cmd.Parameters.AddWithValue("@FilePath", destinationPath);
 
                         cmd.ExecuteNonQuery();
@@ -141,15 +163,15 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                     else
                     {
                         string insert = @"
-                            INSERT INTO ApplicantDocuments
-                            (ApplicantID, DocumentType, FileName, FilePath, Status)
-                            VALUES
-                            (@ApplicantID, @DocumentType, @FileName, @FilePath, 'Submitted')";
+                                INSERT INTO ApplicantDocuments
+                                (ApplicantID, RequirementTypeID, FilePath, Status)
+                                VALUES
+                                (@ApplicantID, @RequirementTypeID, @FilePath, 'Submitted')";
 
                         MySqlCommand cmd = new MySqlCommand(insert, conn);
+
                         cmd.Parameters.AddWithValue("@ApplicantID", applicantID);
-                        cmd.Parameters.AddWithValue("@DocumentType", cboDocumentType.Text);
-                        cmd.Parameters.AddWithValue("@FileName", fileName);
+                        cmd.Parameters.AddWithValue("@RequirementTypeID", requirementTypeID);
                         cmd.Parameters.AddWithValue("@FilePath", destinationPath);
 
                         cmd.ExecuteNonQuery();
@@ -200,7 +222,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                 if (result == DialogResult.No)
                     return;
 
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (MySqlConnection conn = DatabaseConnection.GetConnection())
                 {
                     conn.Open();
 
@@ -233,8 +255,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         {
             if (e.RowIndex >= 0)
             {
-                txtRemarks.Text =
-                    dgvDocuments.Rows[e.RowIndex].Cells["Remarks"].Value?.ToString() ?? "";
+                txtRemarks.Text = "No remarks available.";
             }
         }
 
@@ -267,5 +288,12 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
         // SAFE STUB (prevents designer crash)
         private void label2_Click(object sender, EventArgs e) { }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            ApplicantDashboardForm dashboard = new ApplicantDashboardForm(applicantID);
+            dashboard.Show();
+            this.Close();
+        }
     }
 }

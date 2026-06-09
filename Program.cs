@@ -1,4 +1,3 @@
-using HR_Recruitment_System;
 
 namespace HR_Applicant_Process_Windows_System_MAIN
 {
@@ -13,7 +12,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new HRAdminDashboard());
+            Application.Run(new Choice());
         }
     }
 }

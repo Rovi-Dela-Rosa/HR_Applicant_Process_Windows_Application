@@ -32,20 +32,17 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                 MessageBox.Show("Please fill in all fields.");
                 return;
             }
-
-
-
             try
             {
                 using (MySqlConnection conn = new MySqlConnection(connString))
                 {
                     conn.Open();
 
-                    string query = @"SELECT COUNT(*)
-                             FROM ApplicantAccounts
-                             WHERE Username = @Username
-                             AND Email = @Email
-                             AND PasswordHash = @PasswordHash";
+                    string query = @"SELECT AccountID
+                                    FROM ApplicantAccounts
+                                    WHERE Username = @Username
+                                    AND Email = @Email
+                                    AND PasswordHash = @PasswordHash";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
@@ -53,14 +50,16 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                         cmd.Parameters.AddWithValue("@Email", email);
                         cmd.Parameters.AddWithValue("@PasswordHash", password);
 
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        object result = cmd.ExecuteScalar();
 
-                        if (count == 1)
+                        if (result != null)
                         {
-                            int applicantID = 1;
+                            int loggedInAccountID = Convert.ToInt32(result);
 
-                            ApplicantDashboardForm registerForm = new ApplicantDashboardForm(applicantID);
-                            registerForm.Show();
+                            MessageBox.Show("Login successful!");
+
+                            ApplicantDashboardForm dashboard = new ApplicantDashboardForm(loggedInAccountID);
+                            dashboard.Show();
                             this.Hide();
                         }
                         else

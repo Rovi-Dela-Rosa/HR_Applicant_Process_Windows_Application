@@ -40,9 +40,9 @@
             label1.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
             label1.Location = new Point(284, 29);
             label1.Name = "label1";
-            label1.Size = new Size(389, 41);
+            label1.Size = new Size(383, 41);
             label1.TabIndex = 0;
-            label1.Text = "Your Application TimeLine";
+            label1.Text = "Your Application Timeline";
             // 
             // dgvStatusHistory
             // 

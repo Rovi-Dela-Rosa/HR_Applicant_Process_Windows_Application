@@ -1,6 +1,8 @@
+using HR_Applicant_Process_Windows_System_MAIN.Database;
+using MySql.Data.MySqlClient;
 using System;
-using System.IO;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace HR_Applicant_Process_Windows_System_MAIN
@@ -15,27 +17,78 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         {
             InitializeComponent();
             this.currentApplicantID = dynamicID;
-            LoadMockApplicantData();
-        }
 
-        private void LoadMockApplicantData()
+            LoadApplicationData();
+        }
+        private void LoadApplicationData()
         {
-            lblJobTitle.Text = "Junior Programmer (IT Department)";
+            try
+            {
+                using (var conn = DatabaseConnection.GetConnection())
+                {
+                    conn.Open();
 
-            lblStatus.Text = "Submitted / Pending HR Review";
-            lblStatus.ForeColor = Color.Navy;
+                    string query = @"
+            SELECT 
+                a.ApplicationID,
+                a.CurrentStatus,
+                p.PositionName,
+                d.DepartmentName
+            FROM Applications a
+            INNER JOIN JobVacancies jv ON a.VacancyID = jv.VacancyID
+            INNER JOIN Positions p ON jv.PositionID = p.PositionID
+            INNER JOIN Departments d ON jv.DepartmentID = d.DepartmentID
+            WHERE a.ApplicantID = @ApplicantID
+            ORDER BY a.AppliedDate DESC
+            LIMIT 1";
 
-            txtApplicantName.Text = "Miguela Vistar";
-            lblResumePath.Text = "Miguela_Vistar_Resume_2026.pdf";
-            lblTranscriptPath.Text = "Miguela_Vistar_TOR_Official.pdf";
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ApplicantID", currentApplicantID);
 
-            ToggleFormControls(false);
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                lblJobTitle.Text =
+                                    reader["PositionName"].ToString() +
+                                    " (" +
+                                    reader["DepartmentName"].ToString() +
+                                    ")";
 
-            MessageBox.Show("Welcome back, Miguela!\n\nDisplaying your submitted portfolio record for the 'Junior Programmer' position.",
-                            "Application File Opened", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                lblStatus.Text =
+                                    reader["CurrentStatus"].ToString();
+
+                                txtApplicantName.Text = "Applicant #" + currentApplicantID;
+
+                                lblStatus.ForeColor = Color.Navy;
+
+                                ToggleFormControls(false);
+                            }
+                            else
+                            {
+                                MessageBox.Show(
+                                    "No submitted applications found.",
+                                    "Information",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Database Error: " + ex.Message,
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
         }
 
-        
         private void btnSaveDraft_Click(object sender, EventArgs e)
         {
             if (isSubmitted)
@@ -50,7 +103,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             MessageBox.Show("Your changes have been securely saved as a local Draft!", "Draft State Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-      
+
         private void btnSubmit_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtApplicantName.Text))
@@ -61,14 +114,14 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
             isSubmitted = true;
             lblStatus.Text = "Submitted / Pending HR Review";
-            lblStatus.ForeColor = Color.Navy; 
+            lblStatus.ForeColor = Color.Navy;
 
             ToggleFormControls(false);
 
             MessageBox.Show("Your updated application package has been successfully transmitted to corporate recruitment arrays!", "Submission Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        
+
         private void btnEdit_Click(object sender, EventArgs e)
         {
             if (isUnderHRReview)
@@ -105,7 +158,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             btnSaveDraft.Enabled = state;
         }
 
-        
+
         private void btnBrowseResume_Click(object sender, EventArgs e)
         {
             string file = OpenFileExplorer();
@@ -124,7 +177,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             }
         }
 
- 
+
         private string OpenFileExplorer()
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
@@ -140,6 +193,13 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
         private void panelWorkspace_Paint(object sender, PaintEventArgs e)
         {
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            ApplicantDashboardForm dashboard = new ApplicantDashboardForm(currentApplicantID);
+            dashboard.Show();
+            this.Close();
         }
     }
 }

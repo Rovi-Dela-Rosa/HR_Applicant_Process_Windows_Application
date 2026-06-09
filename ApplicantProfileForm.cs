@@ -13,8 +13,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
     public partial class ApplicantProfileForm : Form
     {
         private int currentApplicantID;
-        private int loggedInAccountID;
-        private int accountID;
+        private int loggedInAccountID = 0;
         private void LoadProfile()
         {
             try
@@ -23,45 +22,59 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                 {
                     conn.Open();
 
-                    string query = "SELECT * FROM Applicants LIMIT 1";
+                    string query = "SELECT * FROM Applicants WHERE AccountID = @AccountID";
 
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-
-                    MySqlDataReader reader = cmd.ExecuteReader();
-
-                    if (reader.Read())
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
-                        currentApplicantID = Convert.ToInt32(reader["ApplicantID"]);
+                        cmd.Parameters.AddWithValue("@AccountID", this.loggedInAccountID);
 
-                        txtFirstName.Text = reader["FirstName"].ToString();
-                        txtLastName.Text = reader["LastName"].ToString();
-                        txtContactNumber.Text = reader["ContactNumber"].ToString();
-                        txtAddress.Text = reader["Address"].ToString();
-                        if (reader["DateOfBirth"] != DBNull.Value && reader["DateOfBirth"] != null && !string.IsNullOrEmpty(reader["DateOfBirth"].ToString()))
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
-                            dtpDateOfBirth.Value = Convert.ToDateTime(reader["DateOfBirth"]);
+                            if (reader.Read())
+                            {
+                                this.currentApplicantID = Convert.ToInt32(reader["ApplicantID"]);
+
+                                txtFirstName.Text = reader["FirstName"].ToString();
+                                txtLastName.Text = reader["LastName"].ToString();
+                                txtContactNumber.Text = reader["ContactNumber"].ToString();
+                                txtAddress.Text = reader["Address"].ToString();
+
+                                if (reader["DateOfBirth"] != DBNull.Value && reader["DateOfBirth"] != null && !string.IsNullOrEmpty(reader["DateOfBirth"].ToString()))
+                                {
+                                    dtpDateOfBirth.Value = Convert.ToDateTime(reader["DateOfBirth"]);
+                                }
+                                else
+                                {
+                                    dtpDateOfBirth.Value = DateTime.Now;
+                                }
+
+                                txtEducation.Text = reader["HighestEducation"].ToString();
+                                txtSkills.Text = reader["Skills"].ToString();
+                                txtWrkExp.Text = reader["WorkExperience"].ToString();
+
+                                btnSave.Enabled = false;
+                                btnUpdate.Enabled = true;
+                            }
+                            else
+                            {
+                                this.currentApplicantID = 0;
+                                ClearFields();
+                                btnSave.Enabled = true;
+                                btnUpdate.Enabled = false;
+                            }
                         }
-                        else
-                        {
-                            dtpDateOfBirth.Value = DateTime.Now;
-                        }
-                        txtEducation.Text = reader["HighestEducation"].ToString();
-                        txtSkills.Text = reader["Skills"].ToString();
-                        txtWrkExp.Text = reader["WorkExperience"].ToString();
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Error loading profile: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         public ApplicantProfileForm(int loggedInID)
         {
             InitializeComponent();
-            this.accountID = accountID;
             this.loggedInAccountID = loggedInID;
-            this.currentApplicantID = loggedInID;
         }
 
         private void txtEmail_TextChanged(object sender, EventArgs e)
@@ -86,9 +99,14 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
+            if (this.currentApplicantID == 0)
+            {
+                MessageBox.Show("No existing profile found to update. Please save your profile first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
-
                 using (var conn = DatabaseConnection.GetConnection())
                 {
                     conn.Open();
@@ -104,80 +122,100 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                             WorkExperience=@WorkExperience
                         WHERE ApplicantID=@ApplicantID";
 
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ApplicantID", this.currentApplicantID);
+                        cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@LastName", txtLastName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@ContactNumber", txtContactNumber.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Address", txtAddress.Text.Trim());
+                        cmd.Parameters.AddWithValue("@DateOfBirth", dtpDateOfBirth.Value.ToString("yyyy-MM-dd"));
+                        cmd.Parameters.AddWithValue("@Education", txtEducation.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Skills", txtSkills.Text.Trim());
+                        cmd.Parameters.AddWithValue("@WorkExperience", txtWrkExp.Text.Trim());
 
-                    cmd.Parameters.AddWithValue("@AccountID", this.loggedInAccountID);
-                    cmd.Parameters.AddWithValue("@ApplicantID", currentApplicantID);
-                    cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text);
-                    cmd.Parameters.AddWithValue("@LastName", txtLastName.Text);
-                    cmd.Parameters.AddWithValue("@ContactNumber", txtContactNumber.Text);
-                    cmd.Parameters.AddWithValue("@DateOfBirth", dtpDateOfBirth.Value.ToString("yyyy-MM-dd"));
-                    cmd.Parameters.AddWithValue("@Address", txtAddress.Text);
-                    cmd.Parameters.AddWithValue("@Education", txtEducation.Text);
-                    cmd.Parameters.AddWithValue("@Skills", txtSkills.Text);
-                    cmd.Parameters.AddWithValue("@WorkExperience", txtWrkExp.Text);
+                        cmd.ExecuteNonQuery();
 
-                    cmd.ExecuteNonQuery();
-
-                    MessageBox.Show("Profile updated successfully!");
+                        MessageBox.Show("Profile updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Error updating profile: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (txtFirstName.Text.Trim() == "")
+            if (string.IsNullOrWhiteSpace(txtFirstName.Text))
             {
-                MessageBox.Show("First Name is required.");
+                MessageBox.Show("First Name is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (txtLastName.Text.Trim() == "")
+            if (string.IsNullOrWhiteSpace(txtLastName.Text))
             {
-                MessageBox.Show("Last Name is required.");
+                MessageBox.Show("Last Name is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             try
             {
-
                 using (var conn = DatabaseConnection.GetConnection())
                 {
                     conn.Open();
 
+                    string checkQuery = "SELECT COUNT(*) FROM Applicants WHERE AccountID = @AccountID";
+
+                    using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
+                    {
+                        checkCmd.Parameters.AddWithValue("@AccountID", this.loggedInAccountID);
+
+                        int existingCount = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                        if (existingCount > 0)
+                        {
+                            MessageBox.Show(
+                                "Profile already exists. Please use Update instead.",
+                                "Duplicate Profile",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+
+                            LoadProfile();
+                            return;
+                        }
+                    }
+
                     string query = @"INSERT INTO Applicants
-                        (AccountID, FirstName, LastName, ContactNumber,
-                         Address, DateOfBirth, HighestEducation,
-                         Skills, WorkExperience)
-                         VALUES
-                        (@AccountID, @FirstName, @LastName, @ContactNumber,
-                         @Address, @DateOfBirth, @Education,
-                         @Skills, @WorkExperience)";
+                        (AccountID, FirstName, LastName, ContactNumber, Address, DateOfBirth, HighestEducation, Skills, WorkExperience)
+                        VALUES
+                        (@AccountID, @FirstName, @LastName, @ContactNumber, @Address, @DateOfBirth, @Education, @Skills, @WorkExperience)";
 
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@AccountID", this.loggedInAccountID);
+                        cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@LastName", txtLastName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@ContactNumber", txtContactNumber.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Address", txtAddress.Text.Trim());
+                        cmd.Parameters.AddWithValue("@DateOfBirth", dtpDateOfBirth.Value.ToString("yyyy-MM-dd"));
+                        cmd.Parameters.AddWithValue("@Education", txtEducation.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Skills", txtSkills.Text.Trim());
+                        cmd.Parameters.AddWithValue("@WorkExperience", txtWrkExp.Text.Trim());
 
-                    cmd.Parameters.AddWithValue("@AccountID", loggedInAccountID);
-                    cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text);
-                    cmd.Parameters.AddWithValue("@LastName", txtLastName.Text);
-                    cmd.Parameters.AddWithValue("@ContactNumber", txtContactNumber.Text);
-                    cmd.Parameters.AddWithValue("@Address", txtAddress.Text);
-                    cmd.Parameters.AddWithValue("@DateOfBirth", dtpDateOfBirth.Value.ToString("yyyy-MM-dd"));
-                    cmd.Parameters.AddWithValue("@Education", txtEducation.Text);
-                    cmd.Parameters.AddWithValue("@Skills", txtSkills.Text);
-                    cmd.Parameters.AddWithValue("@WorkExperience", txtWrkExp.Text);
+                        cmd.ExecuteNonQuery();
 
-                    cmd.ExecuteNonQuery();
+                        MessageBox.Show("Profile saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    MessageBox.Show("Profile saved successfully!");
+                        LoadProfile();
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: " + ex.Message);
+                MessageBox.Show("Error saving profile: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -213,9 +251,21 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            ApplicantDashboardForm dashboard = new ApplicantDashboardForm(this.currentApplicantID);
+            ApplicantDashboardForm dashboard = new ApplicantDashboardForm(this.loggedInAccountID);
             dashboard.Show();
             this.Close();
+        }
+
+        private void ClearFields()
+        {
+            txtFirstName.Clear();
+            txtLastName.Clear();
+            txtContactNumber.Clear();
+            txtAddress.Clear();
+            dtpDateOfBirth.Value = DateTime.Now;
+            txtEducation.Clear();
+            txtSkills.Clear();
+            txtWrkExp.Clear();
         }
     }
 }

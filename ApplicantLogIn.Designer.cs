@@ -105,7 +105,7 @@
             button1.Anchor = AnchorStyles.None;
             button1.BackColor = Color.Red;
             button1.Font = new Font("Segoe UI", 15F);
-            button1.Location = new Point(139, 340);
+            button1.Location = new Point(144, 338);
             button1.Margin = new Padding(3, 4, 3, 4);
             button1.Name = "button1";
             button1.Size = new Size(158, 51);
