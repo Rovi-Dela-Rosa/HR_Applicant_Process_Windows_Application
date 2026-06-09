@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <Compile Update="ApplicantDashboardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ApplicantDocuments.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ApplicantLogIn.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ApplicantProfileForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Applicantregistration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ApplicantReviewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ApplicantStatusForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Choice.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Change Password Applicant.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Final Hiring Decision.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ApplicantList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="HrChangePass.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Hrstaff.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="HRAdminDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="HR LogIn.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Interview Evaluation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Interview Scheduling.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Job Vacancy Management.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Job Vacancy.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Maintenance Module.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="myapplicationpage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Reports Module.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ScreeningModule.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>
