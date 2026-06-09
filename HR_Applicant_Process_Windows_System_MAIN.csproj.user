@@ -1,46 +1,74 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
   <ItemGroup>
-    <Compile Update="Forms\ApplicantDashboardForm.cs">
+    <Compile Update="ApplicantDashboardForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\ApplicantDocuments.cs">
+    <Compile Update="ApplicantDocuments.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\ApplicantLogIn.cs">
+    <Compile Update="ApplicantLogIn.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\ApplicantProfileForm.cs">
+    <Compile Update="ApplicantProfileForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\Applicantregistration.cs">
+    <Compile Update="Applicantregistration.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\ApplicantStatusForm.cs">
+    <Compile Update="ApplicantReviewForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\Change Password Applicant.cs">
+    <Compile Update="ApplicantStatusForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\Choice.cs">
+    <Compile Update="Choice.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\HR LogIn.cs">
+    <Compile Update="Change Password Applicant.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\HRAdminDashboard.cs">
+    <Compile Update="Final Hiring Decision.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\HrChangePass.cs">
+    <Compile Update="ApplicantList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\Hrstaff.cs">
+    <Compile Update="HrChangePass.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\Job Vacancy.cs">
+    <Compile Update="Hrstaff.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\myapplicationpage.cs">
+    <Compile Update="HRAdminDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="HR LogIn.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Interview Evaluation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Interview Scheduling.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Job Vacancy Management.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Job Vacancy.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Maintenance Module.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="myapplicationpage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Reports Module.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ScreeningModule.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

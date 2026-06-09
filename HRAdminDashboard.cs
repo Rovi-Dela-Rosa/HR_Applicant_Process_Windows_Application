@@ -76,7 +76,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             }
 
             string connString =
-                "server=localhost;database=hr_recruitment_db;uid=root;pwd=DDNLR023;";
+                "server=localhost;database=hr_recruitment_db;uid=root;pwd=ivor_blunt00;";
 
             string query = @"
         INSERT INTO Users

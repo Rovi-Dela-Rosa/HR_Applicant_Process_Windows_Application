@@ -9,7 +9,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private const string ConnStr =
             "server=localhost;" +
             "user=root;" +
-            "password=DDNLR023;" +
+            "password=ivor_blunt00;" +
             "database=hr_recruitment_db;";
 
         public Report()

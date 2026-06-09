@@ -8,7 +8,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
     public partial class Screening: Form
     {
         private string connectionString =
-            "server=localhost;port=3306;database=hr_recruitment_db;uid=root;pwd=DDNLR023;";
+            "server=localhost;port=3306;database=hr_recruitment_db;uid=root;pwd=ivor_blunt00;";
 
         public Screening()
         {
