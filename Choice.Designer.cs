@@ -40,10 +40,9 @@
             button1.FlatAppearance.BorderSize = 120;
             button1.FlatStyle = FlatStyle.Popup;
             button1.Font = new Font("Segoe UI", 30F);
-            button1.Location = new Point(120, 81);
-            button1.Margin = new Padding(3, 4, 3, 4);
+            button1.Location = new Point(57, 46);
             button1.Name = "button1";
-            button1.Size = new Size(338, 396);
+            button1.Size = new Size(296, 297);
             button1.TabIndex = 0;
             button1.Text = "HR Admin/Staff";
             button1.UseVisualStyleBackColor = false;
@@ -57,10 +56,9 @@
             button2.FlatAppearance.BorderSize = 120;
             button2.FlatStyle = FlatStyle.Popup;
             button2.Font = new Font("Segoe UI", 30F);
-            button2.Location = new Point(501, 81);
-            button2.Margin = new Padding(3, 4, 3, 4);
+            button2.Location = new Point(452, 46);
             button2.Name = "button2";
-            button2.Size = new Size(338, 396);
+            button2.Size = new Size(296, 297);
             button2.TabIndex = 1;
             button2.Text = "Applicant";
             button2.UseVisualStyleBackColor = false;
@@ -68,14 +66,14 @@
             // 
             // Choice
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Azure;
-            ClientSize = new Size(961, 600);
+            ClientSize = new Size(841, 450);
             Controls.Add(button2);
             Controls.Add(button1);
-            Margin = new Padding(3, 4, 3, 4);
             Name = "Choice";
+            Text = "Form1";
             ResumeLayout(false);
         }
 
