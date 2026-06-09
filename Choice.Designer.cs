@@ -40,7 +40,7 @@
             button1.FlatAppearance.BorderSize = 120;
             button1.FlatStyle = FlatStyle.Popup;
             button1.Font = new Font("Segoe UI", 30F);
-            button1.Location = new Point(65, 61);
+            button1.Location = new Point(120, 81);
             button1.Margin = new Padding(3, 4, 3, 4);
             button1.Name = "button1";
             button1.Size = new Size(338, 396);
@@ -57,7 +57,7 @@
             button2.FlatAppearance.BorderSize = 120;
             button2.FlatStyle = FlatStyle.Popup;
             button2.Font = new Font("Segoe UI", 30F);
-            button2.Location = new Point(517, 61);
+            button2.Location = new Point(501, 81);
             button2.Margin = new Padding(3, 4, 3, 4);
             button2.Name = "button2";
             button2.Size = new Size(338, 396);

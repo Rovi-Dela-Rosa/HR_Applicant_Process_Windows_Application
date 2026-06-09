@@ -4,6 +4,9 @@
     <Compile Update="Forms\ApplicantDashboardForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forms\ApplicantDocuments.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forms\ApplicantLogIn.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -11,6 +14,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forms\Applicantregistration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\ApplicantStatusForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forms\Change Password Applicant.cs">
@@ -29,6 +35,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forms\Hrstaff.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Job Vacancy.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\myapplicationpage.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

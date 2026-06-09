@@ -19,7 +19,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private void btnLogin_Click(object sender, EventArgs e)
         {
             string connString =
-                "server=localhost;database=hr_recruitment_db;uid=root;pwd=blunt_ivor00;";
+                "server=localhost;database=hr_recruitment_db;uid=root;pwd=ivor_blunt00;";
 
             string username = richTextBox1.Text.Trim();
             string email = richTextBox2.Text.Trim();
@@ -57,7 +57,9 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
                         if (count == 1)
                         {
-                            ApplicantDashboardForm registerForm = new ApplicantDashboardForm();
+                            int applicantID = 1;
+
+                            ApplicantDashboardForm registerForm = new ApplicantDashboardForm(applicantID);
                             registerForm.Show();
                             this.Hide();
                         }

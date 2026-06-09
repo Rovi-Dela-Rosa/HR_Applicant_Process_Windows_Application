@@ -12,6 +12,9 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 {
     public partial class ApplicantProfileForm : Form
     {
+        private int currentApplicantID;
+        private int loggedInAccountID;
+        private int accountID;
         private void LoadProfile()
         {
             try
@@ -34,6 +37,14 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                         txtLastName.Text = reader["LastName"].ToString();
                         txtContactNumber.Text = reader["ContactNumber"].ToString();
                         txtAddress.Text = reader["Address"].ToString();
+                        if (reader["DateOfBirth"] != DBNull.Value && reader["DateOfBirth"] != null && !string.IsNullOrEmpty(reader["DateOfBirth"].ToString()))
+                        {
+                            dtpDateOfBirth.Value = Convert.ToDateTime(reader["DateOfBirth"]);
+                        }
+                        else
+                        {
+                            dtpDateOfBirth.Value = DateTime.Now;
+                        }
                         txtEducation.Text = reader["HighestEducation"].ToString();
                         txtSkills.Text = reader["Skills"].ToString();
                         txtWrkExp.Text = reader["WorkExperience"].ToString();
@@ -45,10 +56,12 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                 MessageBox.Show(ex.Message);
             }
         }
-        private int currentApplicantID = 0;
-        public ApplicantProfileForm()
+        public ApplicantProfileForm(int loggedInID)
         {
             InitializeComponent();
+            this.accountID = accountID;
+            this.loggedInAccountID = loggedInID;
+            this.currentApplicantID = loggedInID;
         }
 
         private void txtEmail_TextChanged(object sender, EventArgs e)
@@ -85,6 +98,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                             LastName=@LastName,
                             ContactNumber=@ContactNumber,
                             Address=@Address,
+                            DateOfBirth=@DateOfBirth,
                             HighestEducation=@Education,
                             Skills=@Skills,
                             WorkExperience=@WorkExperience
@@ -92,10 +106,12 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
                     MySqlCommand cmd = new MySqlCommand(query, conn);
 
+                    cmd.Parameters.AddWithValue("@AccountID", this.loggedInAccountID);
                     cmd.Parameters.AddWithValue("@ApplicantID", currentApplicantID);
                     cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text);
                     cmd.Parameters.AddWithValue("@LastName", txtLastName.Text);
                     cmd.Parameters.AddWithValue("@ContactNumber", txtContactNumber.Text);
+                    cmd.Parameters.AddWithValue("@DateOfBirth", dtpDateOfBirth.Value.ToString("yyyy-MM-dd"));
                     cmd.Parameters.AddWithValue("@Address", txtAddress.Text);
                     cmd.Parameters.AddWithValue("@Education", txtEducation.Text);
                     cmd.Parameters.AddWithValue("@Skills", txtSkills.Text);
@@ -134,20 +150,22 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                     conn.Open();
 
                     string query = @"INSERT INTO Applicants
-                        (FirstName, LastName, ContactNumber,
-                         Address, HighestEducation,
+                        (AccountID, FirstName, LastName, ContactNumber,
+                         Address, DateOfBirth, HighestEducation,
                          Skills, WorkExperience)
                          VALUES
-                        (@FirstName, @LastName, @ContactNumber,
-                         @Address, @Education,
+                        (@AccountID, @FirstName, @LastName, @ContactNumber,
+                         @Address, @DateOfBirth, @Education,
                          @Skills, @WorkExperience)";
 
                     MySqlCommand cmd = new MySqlCommand(query, conn);
 
+                    cmd.Parameters.AddWithValue("@AccountID", loggedInAccountID);
                     cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text);
                     cmd.Parameters.AddWithValue("@LastName", txtLastName.Text);
                     cmd.Parameters.AddWithValue("@ContactNumber", txtContactNumber.Text);
                     cmd.Parameters.AddWithValue("@Address", txtAddress.Text);
+                    cmd.Parameters.AddWithValue("@DateOfBirth", dtpDateOfBirth.Value.ToString("yyyy-MM-dd"));
                     cmd.Parameters.AddWithValue("@Education", txtEducation.Text);
                     cmd.Parameters.AddWithValue("@Skills", txtSkills.Text);
                     cmd.Parameters.AddWithValue("@WorkExperience", txtWrkExp.Text);
@@ -186,6 +204,18 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private void txtFirstName_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void dtpDateOfBirth_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            ApplicantDashboardForm dashboard = new ApplicantDashboardForm(this.currentApplicantID);
+            dashboard.Show();
+            this.Close();
         }
     }
 }

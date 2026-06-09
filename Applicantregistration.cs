@@ -21,6 +21,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             string connString =
                 "server=localhost;database=hr_recruitment_db;uid=root;pwd=ivor_blunt00;";
 
+            string username = richTextBox1.Text;
             string email = richTextBox2.Text;
             string password = richTextBox3.Text;
 
@@ -30,11 +31,12 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                 {
                     conn.Open();
 
-                    string query = @"INSERT INTO ApplicantAccounts (Email, PasswordHash)
-                             VALUES (@Email, @PasswordHash)";
+                    string query = @"INSERT INTO ApplicantAccounts (Username, Email, PasswordHash)
+                             VALUES (@Username, @Email, @PasswordHash)";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
+                        cmd.Parameters.AddWithValue("@Username", username);
                         cmd.Parameters.AddWithValue("@Email", email);
                         cmd.Parameters.AddWithValue("@PasswordHash", password);
 

@@ -53,6 +53,7 @@
             btnSave = new Button();
             btnUpdate = new Button();
             groupBox2 = new GroupBox();
+            btnBack = new Button();
             grpPersonalInfo.SuspendLayout();
             grpContact.SuspendLayout();
             grpEducation.SuspendLayout();
@@ -92,6 +93,7 @@
             dtpDateOfBirth.Name = "dtpDateOfBirth";
             dtpDateOfBirth.Size = new Size(250, 27);
             dtpDateOfBirth.TabIndex = 5;
+            dtpDateOfBirth.ValueChanged += dtpDateOfBirth_ValueChanged;
             // 
             // label3
             // 
@@ -299,12 +301,24 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Skills";
             // 
+            // btnBack
+            // 
+            btnBack.BackColor = Color.Azure;
+            btnBack.Location = new Point(58, 595);
+            btnBack.Name = "btnBack";
+            btnBack.Size = new Size(80, 29);
+            btnBack.TabIndex = 8;
+            btnBack.Text = "← Back";
+            btnBack.UseVisualStyleBackColor = false;
+            btnBack.Click += btnBack_Click;
+            // 
             // ApplicantProfileForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Azure;
             ClientSize = new Size(982, 653);
+            Controls.Add(btnBack);
             Controls.Add(groupBox2);
             Controls.Add(btnUpdate);
             Controls.Add(btnSave);
@@ -370,5 +384,6 @@
         private GroupBox groupBox1;
         private TextBox txtEducation;
         private GroupBox groupBox2;
+        private Button btnBack;
     }
 }
