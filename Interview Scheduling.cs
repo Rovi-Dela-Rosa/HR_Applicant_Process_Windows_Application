@@ -22,6 +22,7 @@ namespace Interview_Scheduling
 
             LoadQualifiedApplicants();
             LoadInterviewers();
+            LoadInterviewTypes();
             LoadExistingSchedules();
 
             HookValidation();
@@ -36,6 +37,7 @@ namespace Interview_Scheduling
         {
             foreach (ComboBox cmb in new[] {
                 cmbApplicant, cmbInterviewer, cmbStatus,
+                cmbInterviewType,
                 cmbUpdateInterviewer, cmbUpdateStatus })
             {
                 cmb.DrawMode = DrawMode.OwnerDrawFixed;
@@ -133,6 +135,33 @@ namespace Interview_Scheduling
             }
         }
 
+        private void LoadInterviewTypes()
+        {
+            using (MySqlConnection conn = new MySqlConnection(ConnStr))
+            {
+                conn.Open();
+
+                string query = @"
+                    SELECT InterviewTypeID,
+                           CONCAT(InterviewTypeID, ' - ', TypeName) AS DisplayText
+                    FROM InterviewTypes";
+
+                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                DataRow row = dt.NewRow();
+                row["InterviewTypeID"] = 0;
+                row["DisplayText"] = "-- Select Interview Type --";
+                dt.Rows.InsertAt(row, 0);
+
+                cmbInterviewType.DataSource = dt;
+                cmbInterviewType.DisplayMember = "DisplayText";
+                cmbInterviewType.ValueMember = "InterviewTypeID";
+                cmbInterviewType.SelectedIndex = 0;
+            }
+        }
+
         private void LoadExistingSchedules()
         {
             using (MySqlConnection conn = new MySqlConnection(ConnStr))
@@ -144,14 +173,16 @@ namespace Interview_Scheduling
                 isch.InterviewID,
                 CONCAT(a.FirstName, ' ', a.LastName) AS Applicant,
                 app.ApplicationID,
-                isch.InterviewDate  AS InterviewDateTime,
+                it.TypeName             AS InterviewType,
+                isch.InterviewDate      AS InterviewDateTime,
                 isch.Location,
                 isch.Status,
-                u.Username          AS Interviewer
+                u.Username              AS Interviewer
             FROM InterviewSchedules isch
-            INNER JOIN Applications app ON isch.ApplicationID = app.ApplicationID
-            INNER JOIN Applicants a     ON app.ApplicantID    = a.ApplicantID
-            INNER JOIN users u          ON isch.InterviewerID = u.UserID
+            INNER JOIN Applications app  ON isch.ApplicationID   = app.ApplicationID
+            INNER JOIN Applicants a      ON app.ApplicantID      = a.ApplicantID
+            INNER JOIN users u           ON isch.InterviewerID   = u.UserID
+            LEFT  JOIN InterviewTypes it ON isch.InterviewTypeID = it.InterviewTypeID
             WHERE isch.InterviewDate >= NOW()
             ORDER BY isch.InterviewDate ASC";
 
@@ -165,6 +196,7 @@ namespace Interview_Scheduling
                 dgvSchedules.Columns["ApplicationID"].Visible = false;
 
                 dgvSchedules.Columns["Applicant"].HeaderText = "Applicant";
+                dgvSchedules.Columns["InterviewType"].HeaderText = "Interview Type";
                 dgvSchedules.Columns["InterviewDateTime"].HeaderText = "Date & Time";
                 dgvSchedules.Columns["Location"].HeaderText = "Location";
                 dgvSchedules.Columns["Status"].HeaderText = "Status";
@@ -182,6 +214,7 @@ namespace Interview_Scheduling
             bool valid =
                 cmbApplicant.SelectedIndex > 0 &&
                 cmbInterviewer.SelectedIndex > 0 &&
+                cmbInterviewType.SelectedIndex > 0 &&
                 !string.IsNullOrWhiteSpace(txtLocation.Text) &&
                 cmbStatus.SelectedIndex > -1;
 
@@ -204,6 +237,7 @@ namespace Interview_Scheduling
             txtLocation.TextChanged += (s, e) => ValidateInputs();
             cmbApplicant.SelectionChangeCommitted += (s, e) => ValidateInputs();
             cmbInterviewer.SelectionChangeCommitted += (s, e) => ValidateInputs();
+            cmbInterviewType.SelectionChangeCommitted += (s, e) => ValidateInputs();
             cmbStatus.SelectionChangeCommitted += (s, e) => ValidateInputs();
 
             txtUpdateLocation.TextChanged += (s, e) => ValidateUpdate();
@@ -258,7 +292,6 @@ namespace Interview_Scheduling
             ValidateUpdate();
         }
 
-
         private void CloseUpdatePanel()
         {
             _selectedInterviewID = -1;
@@ -278,12 +311,13 @@ namespace Interview_Scheduling
 
                     string query = @"
                         INSERT INTO InterviewSchedules
-                            (ApplicationID, InterviewDate, InterviewerID, Location, Status)
+                            (ApplicationID, InterviewTypeID, InterviewDate, InterviewerID, Location, Status)
                         VALUES
-                            (@ApplicationID, @InterviewDate, @InterviewerID, @Location, @Status)";
+                            (@ApplicationID, @InterviewTypeID, @InterviewDate, @InterviewerID, @Location, @Status)";
 
                     MySqlCommand cmd = new MySqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@ApplicationID", cmbApplicant.SelectedValue);
+                    cmd.Parameters.AddWithValue("@InterviewTypeID", cmbInterviewType.SelectedValue);
                     cmd.Parameters.AddWithValue("@InterviewDate", dtpInterviewDate.Value);
                     cmd.Parameters.AddWithValue("@InterviewerID", cmbInterviewer.SelectedValue);
                     cmd.Parameters.AddWithValue("@Location", txtLocation.Text);
@@ -295,12 +329,14 @@ namespace Interview_Scheduling
 
                     LoadQualifiedApplicants();
                     LoadInterviewers();
+                    LoadInterviewTypes();
                     LoadExistingSchedules();
 
                     txtLocation.Clear();
                     cmbStatus.SelectedIndex = -1;
                     cmbApplicant.SelectedIndex = 0;
                     cmbInterviewer.SelectedIndex = 0;
+                    cmbInterviewType.SelectedIndex = 0;
 
                     ValidateInputs();
                 }
