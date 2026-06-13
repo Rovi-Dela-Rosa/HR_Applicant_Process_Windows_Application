@@ -28,9 +28,12 @@ namespace Interview_Scheduling
         /// </summary>
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             lblInterviewSchedulingTitle = new Label();
             pnlInterviewSchedulingBg = new Panel();
             cmbInterviewer = new ComboBox();
+            cmbInterviewType = new ComboBox();
+            lblInterviewType = new Label();
             btnSave = new Button();
             label2 = new Label();
             cmbStatus = new ComboBox();
@@ -82,6 +85,8 @@ namespace Interview_Scheduling
             pnlInterviewSchedulingBg.BackColor = Color.SteelBlue;
             pnlInterviewSchedulingBg.BorderStyle = BorderStyle.FixedSingle;
             pnlInterviewSchedulingBg.Controls.Add(cmbInterviewer);
+            pnlInterviewSchedulingBg.Controls.Add(cmbInterviewType);
+            pnlInterviewSchedulingBg.Controls.Add(lblInterviewType);
             pnlInterviewSchedulingBg.Controls.Add(btnSave);
             pnlInterviewSchedulingBg.Controls.Add(label2);
             pnlInterviewSchedulingBg.Controls.Add(cmbStatus);
@@ -110,6 +115,30 @@ namespace Interview_Scheduling
             cmbInterviewer.TabIndex = 11;
 
             // 
+            // cmbInterviewType
+            // 
+            cmbInterviewType.BackColor = Color.Azure;
+            cmbInterviewType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbInterviewType.ForeColor = Color.MidnightBlue;
+            cmbInterviewType.FormattingEnabled = true;
+            cmbInterviewType.Location = new Point(241, 44);
+            cmbInterviewType.Name = "cmbInterviewType";
+            cmbInterviewType.Size = new Size(217, 28);
+            cmbInterviewType.TabIndex = 13;
+
+            // 
+            // lblInterviewType
+            // 
+            lblInterviewType.AutoSize = true;
+            lblInterviewType.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblInterviewType.ForeColor = Color.Azure;
+            lblInterviewType.Location = new Point(241, 18);
+            lblInterviewType.Name = "lblInterviewType";
+            lblInterviewType.Size = new Size(119, 23);
+            lblInterviewType.TabIndex = 12;
+            lblInterviewType.Text = "Interview Type";
+
+            // 
             // btnSave
             // 
             btnSave.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -125,7 +154,7 @@ namespace Interview_Scheduling
             btnSave.UseVisualStyleBackColor = false;
 
             // 
-            // label2 (Status label)
+            // label2
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -155,9 +184,9 @@ namespace Interview_Scheduling
             txtLocation.BackColor = Color.Azure;
             txtLocation.BorderStyle = BorderStyle.FixedSingle;
             txtLocation.ForeColor = Color.MidnightBlue;
-            txtLocation.Location = new Point(364, 44);
+            txtLocation.Location = new Point(486, 45);
             txtLocation.Name = "txtLocation";
-            txtLocation.Size = new Size(488, 27);
+            txtLocation.Size = new Size(434, 27);
             txtLocation.TabIndex = 7;
 
             // 
@@ -166,7 +195,7 @@ namespace Interview_Scheduling
             lblLocation.AutoSize = true;
             lblLocation.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblLocation.ForeColor = Color.Azure;
-            lblLocation.Location = new Point(364, 18);
+            lblLocation.Location = new Point(486, 19);
             lblLocation.Name = "lblLocation";
             lblLocation.Size = new Size(75, 23);
             lblLocation.TabIndex = 6;
@@ -199,7 +228,7 @@ namespace Interview_Scheduling
             dtpInterviewDate.TabIndex = 3;
 
             // 
-            // label1 (Interview Date label)
+            // label1
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -218,7 +247,7 @@ namespace Interview_Scheduling
             cmbApplicant.FormattingEnabled = true;
             cmbApplicant.Location = new Point(17, 44);
             cmbApplicant.Name = "cmbApplicant";
-            cmbApplicant.Size = new Size(311, 28);
+            cmbApplicant.Size = new Size(192, 28);
             cmbApplicant.TabIndex = 1;
 
             // 
@@ -234,18 +263,6 @@ namespace Interview_Scheduling
             lblApplicationID.Text = "Applicant";
 
             // 
-            // lblExistingSchedules
-            // 
-            lblExistingSchedules.AutoSize = true;
-            lblExistingSchedules.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblExistingSchedules.ForeColor = Color.MidnightBlue;
-            lblExistingSchedules.Location = new Point(27, 268);
-            lblExistingSchedules.Name = "lblExistingSchedules";
-            lblExistingSchedules.Size = new Size(329, 23);
-            lblExistingSchedules.TabIndex = 0;
-            lblExistingSchedules.Text = "Existing Schedules — click a row to edit";
-
-            // 
             // dgvSchedules
             // 
             dgvSchedules.AllowUserToAddRows = false;
@@ -253,21 +270,9 @@ namespace Interview_Scheduling
             dgvSchedules.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvSchedules.BackgroundColor = Color.Azure;
             dgvSchedules.BorderStyle = BorderStyle.None;
-            dgvSchedules.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
-            {
-                BackColor = Color.MidnightBlue,
-                ForeColor = Color.Azure,
-                Font = new Font("Segoe UI", 9.5F, FontStyle.Bold)
-            };
+            dgvSchedules.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dgvSchedules.ColumnHeadersHeight = 32;
             dgvSchedules.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dgvSchedules.DefaultCellStyle = new DataGridViewCellStyle
-            {
-                BackColor = Color.Azure,
-                ForeColor = Color.MidnightBlue,
-                SelectionBackColor = Color.SteelBlue,
-                SelectionForeColor = Color.Azure
-            };
             dgvSchedules.GridColor = Color.SteelBlue;
             dgvSchedules.Location = new Point(27, 295);
             dgvSchedules.Name = "dgvSchedules";
@@ -458,7 +463,6 @@ namespace Interview_Scheduling
             btnCancelUpdate.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancelUpdate.BackColor = Color.SteelBlue;
             btnCancelUpdate.FlatAppearance.BorderColor = Color.Azure;
-            btnCancelUpdate.FlatAppearance.BorderSize = 1;
             btnCancelUpdate.FlatStyle = FlatStyle.Flat;
             btnCancelUpdate.ForeColor = Color.Azure;
             btnCancelUpdate.Location = new Point(523, 97);
@@ -467,6 +471,18 @@ namespace Interview_Scheduling
             btnCancelUpdate.TabIndex = 26;
             btnCancelUpdate.Text = "Cancel";
             btnCancelUpdate.UseVisualStyleBackColor = false;
+
+            // 
+            // lblExistingSchedules
+            // 
+            lblExistingSchedules.AutoSize = true;
+            lblExistingSchedules.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblExistingSchedules.ForeColor = Color.MidnightBlue;
+            lblExistingSchedules.Location = new Point(27, 268);
+            lblExistingSchedules.Name = "lblExistingSchedules";
+            lblExistingSchedules.Size = new Size(329, 23);
+            lblExistingSchedules.TabIndex = 0;
+            lblExistingSchedules.Text = "Existing Schedules — click a row to edit";
 
             // 
             // Form1
@@ -507,6 +523,8 @@ namespace Interview_Scheduling
         private Label lblLocation;
         private Button btnSave;
         private ComboBox cmbInterviewer;
+        private Label lblInterviewType;
+        private ComboBox cmbInterviewType;
         private Label lblExistingSchedules;
         private DataGridView dgvSchedules;
         private Panel pnlUpdate;
