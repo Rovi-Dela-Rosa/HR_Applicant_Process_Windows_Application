@@ -36,6 +36,8 @@ namespace Interview_Evaluation
             txtScore = new TextBox();
             lblResult = new Label();
             cmbResult = new ComboBox();
+            lblEvaluatedBy = new Label();
+            cmbEvaluatedBy = new ComboBox();
             lblRemarks = new Label();
             txtRemarks = new TextBox();
             btnSave = new Button();
@@ -70,6 +72,8 @@ namespace Interview_Evaluation
             pnlForm.Controls.Add(txtScore);
             pnlForm.Controls.Add(lblResult);
             pnlForm.Controls.Add(cmbResult);
+            pnlForm.Controls.Add(lblEvaluatedBy);
+            pnlForm.Controls.Add(cmbEvaluatedBy);
             pnlForm.Controls.Add(lblRemarks);
             pnlForm.Controls.Add(txtRemarks);
             pnlForm.Controls.Add(btnSave);
@@ -149,6 +153,30 @@ namespace Interview_Evaluation
             cmbResult.Name = "cmbResult";
             cmbResult.Size = new Size(160, 28);
             cmbResult.TabIndex = 2;
+
+            // 
+            // lblEvaluatedBy
+            // 
+            lblEvaluatedBy.AutoSize = true;
+            lblEvaluatedBy.Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblEvaluatedBy.ForeColor = Color.Azure;
+            lblEvaluatedBy.Location = new Point(710, 18);
+            lblEvaluatedBy.Name = "lblEvaluatedBy";
+            lblEvaluatedBy.Size = new Size(104, 23);
+            lblEvaluatedBy.TabIndex = 5;
+            lblEvaluatedBy.Text = "Evaluated By";
+
+            // 
+            // cmbEvaluatedBy
+            // 
+            cmbEvaluatedBy.BackColor = Color.Azure;
+            cmbEvaluatedBy.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbEvaluatedBy.ForeColor = Color.MidnightBlue;
+            cmbEvaluatedBy.FormattingEnabled = true;
+            cmbEvaluatedBy.Location = new Point(710, 44);
+            cmbEvaluatedBy.Name = "cmbEvaluatedBy";
+            cmbEvaluatedBy.Size = new Size(260, 28);
+            cmbEvaluatedBy.TabIndex = 3;
 
             // 
             // lblRemarks
@@ -268,6 +296,8 @@ namespace Interview_Evaluation
         private TextBox txtScore;
         private Label lblResult;
         private ComboBox cmbResult;
+        private Label lblEvaluatedBy;
+        private ComboBox cmbEvaluatedBy;
         private Label lblRemarks;
         private TextBox txtRemarks;
         private Button btnSave;
