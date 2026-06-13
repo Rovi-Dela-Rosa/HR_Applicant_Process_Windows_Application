@@ -19,6 +19,7 @@ namespace Interview_Evaluation
             SetupComboBoxDrawing();
 
             LoadInterviews();
+            LoadEvaluators();
             LoadEvaluations();
 
             HookValidation();
@@ -28,7 +29,7 @@ namespace Interview_Evaluation
 
         private void SetupComboBoxDrawing()
         {
-            foreach (ComboBox cmb in new[] { cmbInterview, cmbResult })
+            foreach (ComboBox cmb in new[] { cmbInterview, cmbResult, cmbEvaluatedBy })
             {
                 cmb.DrawMode = DrawMode.OwnerDrawFixed;
                 cmb.DrawItem += ComboBox_DrawItem;
@@ -94,6 +95,32 @@ namespace Interview_Evaluation
             }
         }
 
+        private void LoadEvaluators()
+        {
+            using (MySqlConnection conn = new MySqlConnection(ConnStr))
+            {
+                conn.Open();
+
+                string query = @"
+                    SELECT UserID, CONCAT(UserID, ' - ', Username) AS DisplayText
+                    FROM users";
+
+                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                DataRow row = dt.NewRow();
+                row["UserID"] = 0;
+                row["DisplayText"] = "-- Select Evaluator --";
+                dt.Rows.InsertAt(row, 0);
+
+                cmbEvaluatedBy.DataSource = dt;
+                cmbEvaluatedBy.DisplayMember = "DisplayText";
+                cmbEvaluatedBy.ValueMember = "UserID";
+                cmbEvaluatedBy.SelectedIndex = 0;
+            }
+        }
+
         private void LoadEvaluations()
         {
             using (MySqlConnection conn = new MySqlConnection(ConnStr))
@@ -107,11 +134,13 @@ namespace Interview_Evaluation
                         isch.InterviewDate                   AS InterviewDateTime,
                         ev.Score,
                         ev.Result,
-                        ev.Remarks
+                        ev.Remarks,
+                        u.Username                           AS EvaluatedBy
                     FROM InterviewEvaluations ev
                     INNER JOIN InterviewSchedules isch ON ev.InterviewID     = isch.InterviewID
                     INNER JOIN Applications app        ON isch.ApplicationID = app.ApplicationID
                     INNER JOIN Applicants a            ON app.ApplicantID    = a.ApplicantID
+                    LEFT  JOIN users u                 ON ev.EvaluatedBy     = u.UserID
                     ORDER BY isch.InterviewDate DESC";
 
                 MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
@@ -127,6 +156,7 @@ namespace Interview_Evaluation
                 dgvEvaluations.Columns["Score"].HeaderText = "Score";
                 dgvEvaluations.Columns["Result"].HeaderText = "Result";
                 dgvEvaluations.Columns["Remarks"].HeaderText = "Remarks";
+                dgvEvaluations.Columns["EvaluatedBy"].HeaderText = "Evaluated By";
 
                 dgvEvaluations.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                 dgvEvaluations.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -152,7 +182,8 @@ namespace Interview_Evaluation
                 !string.IsNullOrWhiteSpace(txtScore.Text) &&
                 decimal.TryParse(txtScore.Text, out _) &&
                 cmbResult.SelectedIndex > -1 &&
-                !cmbResult.Text.StartsWith("-- Select");
+                !cmbResult.Text.StartsWith("-- Select") &&
+                cmbEvaluatedBy.SelectedIndex > 0;
 
             btnSave.Enabled = valid;
         }
@@ -161,6 +192,7 @@ namespace Interview_Evaluation
         {
             cmbInterview.SelectionChangeCommitted += (s, e) => ValidateInputs();
             cmbResult.SelectionChangeCommitted += (s, e) => ValidateInputs();
+            cmbEvaluatedBy.SelectionChangeCommitted += (s, e) => ValidateInputs();
             txtScore.TextChanged += (s, e) => ValidateInputs();
             txtScore.Leave += txtScore_Leave;
 
@@ -186,27 +218,30 @@ namespace Interview_Evaluation
 
                     string query = @"
                         INSERT INTO InterviewEvaluations
-                            (InterviewID, Score, Result, Remarks)
+                            (InterviewID, Score, Result, Remarks, EvaluatedBy)
                         VALUES
-                            (@InterviewID, @Score, @Result, @Remarks)";
+                            (@InterviewID, @Score, @Result, @Remarks, @EvaluatedBy)";
 
                     MySqlCommand cmd = new MySqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@InterviewID", cmbInterview.SelectedValue);
                     cmd.Parameters.AddWithValue("@Score", score);
                     cmd.Parameters.AddWithValue("@Result", cmbResult.Text);
                     cmd.Parameters.AddWithValue("@Remarks", txtRemarks.Text.Trim());
+                    cmd.Parameters.AddWithValue("@EvaluatedBy", cmbEvaluatedBy.SelectedValue);
 
                     cmd.ExecuteNonQuery();
 
                     MessageBox.Show("Evaluation saved successfully!");
 
                     LoadInterviews();
+                    LoadEvaluators();
                     LoadEvaluations();
 
                     txtScore.Clear();
                     txtRemarks.Clear();
                     cmbResult.SelectedIndex = -1;
                     cmbInterview.SelectedIndex = 0;
+                    cmbEvaluatedBy.SelectedIndex = 0;
 
                     ValidateInputs();
                 }
