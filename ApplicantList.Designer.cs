@@ -32,6 +32,7 @@
             dataGridView1 = new DataGridView();
             label1 = new Label();
             richTextBoxSearch = new RichTextBox();
+            linkLabel1 = new LinkLabel();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
@@ -40,6 +41,7 @@
             // 
             panel1.BackColor = Color.White;
             panel1.BorderStyle = BorderStyle.FixedSingle;
+            panel1.Controls.Add(linkLabel1);
             panel1.Controls.Add(dataGridView1);
             panel1.Controls.Add(label1);
             panel1.Controls.Add(richTextBoxSearch);
@@ -77,6 +79,17 @@
             richTextBoxSearch.Text = "";
             richTextBoxSearch.TextChanged += richTextBoxSearch_TextChanged;
             // 
+            // linkLabel1
+            // 
+            linkLabel1.AutoSize = true;
+            linkLabel1.Location = new Point(23, 14);
+            linkLabel1.Name = "linkLabel1";
+            linkLabel1.Size = new Size(53, 15);
+            linkLabel1.TabIndex = 4;
+            linkLabel1.TabStop = true;
+            linkLabel1.Text = "<-- Back";
+            linkLabel1.LinkClicked += Back;
+            // 
             // ApplicantList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -98,5 +111,6 @@
         private Label label1;
         private RichTextBox richTextBoxSearch;
         private DataGridView dataGridView1;
+        private LinkLabel linkLabel1;
     }
 }

@@ -44,6 +44,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                                     AND Email = @Email
                                     AND PasswordHash = @PasswordHash";
 
+
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Username", username);

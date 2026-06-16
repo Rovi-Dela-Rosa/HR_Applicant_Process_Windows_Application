@@ -61,6 +61,11 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             SearchApplicants(richTextBoxSearch.Text.Trim());
         }
 
-        
+        private void Back(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Hrstaff loginForm = new Hrstaff();
+            loginForm.Show();
+            this.Hide();
+        }
     }
 }

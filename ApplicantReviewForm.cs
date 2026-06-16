@@ -1,4 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
+using System.Diagnostics;
+using System.IO;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -19,20 +21,21 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             this.Load += ApplicantReviewForm_Load;
 
             dgvApplicants.CellClick += dgvApplicants_CellClick;
+            btnViewDocument.Click += btnViewDocument_Click;
             btnLockApplication.Click += btnLockApplication_Click;
             btnSearch.Click += btnSearch_Click;
             btnRefresh.Click += btnRefresh_Click;
             cboStatusFilter.SelectedIndexChanged += cboStatusFilter_SelectedIndexChanged;
         }
 
-        
+
         private void ApplicantReviewForm_Load(object sender, EventArgs e)
         {
             LoadStatusFilter();
             LoadApplicants();
         }
 
-       
+
         private void LoadApplicants(string search = "", string status = "All")
         {
             using (MySqlConnection conn = new MySqlConnection(connectionString))
@@ -95,9 +98,11 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
             LoadProfile();
             LoadDocuments();
+
+            AuditTrailManager.LogAction("HR Staff", selectedApplicantID, "Viewed applicant profile and submitted documents");
         }
 
-        
+
         private void LoadProfile()
         {
             using (MySqlConnection conn = new MySqlConnection(connectionString))
@@ -131,7 +136,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             }
         }
 
-        
+
         private void LoadDocuments()
         {
             using (MySqlConnection conn = new MySqlConnection(connectionString))
@@ -158,11 +163,18 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                 new MySqlDataAdapter(cmd).Fill(dt);
 
                 dgvDocuments.DataSource = dt;
+                dgvDocuments.Columns["FilePath"].Visible = false;
+                dgvDocuments.Columns["DocumentID"].Visible = false;
+
+                dgvDocuments.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                dgvDocuments.MultiSelect = false;
+                dgvDocuments.ReadOnly = true;
+                dgvDocuments.RowHeadersVisible = false;
             }
         }
 
-        
-        
+
+
         private void btnLockApplication_Click(object sender, EventArgs e)
         {
             if (selectedApplicantID == 0)
@@ -172,8 +184,8 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             }
 
             DialogResult result = MessageBox.Show(
-                "Lock this application?",
-                "Confirm",
+                "Start to review and lock this application?",
+                "Confirm.",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
@@ -202,28 +214,65 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
                 string update = @"
                 UPDATE Applications
-                SET CurrentStatus='Locked'
+                SET CurrentStatus='Under Review'
                 WHERE ApplicantID=@ApplicantID";
 
                 MySqlCommand updateCmd = new MySqlCommand(update, conn);
                 updateCmd.Parameters.AddWithValue("@ApplicantID", selectedApplicantID);
 
                 updateCmd.ExecuteNonQuery();
+
+                string getApplication = @"
+                SELECT ApplicationID
+                FROM Applications
+                WHERE ApplicantID=@ApplicantID
+                LIMIT 1";
+
+                int applicationID = 0;
+
+                using (MySqlCommand idCmd = new MySqlCommand(getApplication, conn))
+                {
+                    idCmd.Parameters.AddWithValue("@ApplicantID", selectedApplicantID);
+
+                    applicationID = Convert.ToInt32(idCmd.ExecuteScalar());
+                }
+
+                string historyQuery = @"
+                INSERT INTO ApplicationStatusHistory
+                (ApplicationID, Status, Remarks)
+                VALUES
+                (@ApplicationID,
+                'Under Review',
+                'HR started reviewing the application.')";
+
+
+                using (MySqlCommand historyCmd = new MySqlCommand(historyQuery, conn))
+                {
+                    historyCmd.Parameters.AddWithValue("@ApplicationID", applicationID);
+
+                    historyCmd.ExecuteNonQuery();
+                }
             }
 
             LoadApplicants();
         }
 
-        
+
         private void LoadStatusFilter()
         {
             cboStatusFilter.Items.Clear();
+
             cboStatusFilter.Items.Add("All");
             cboStatusFilter.Items.Add("Draft");
             cboStatusFilter.Items.Add("Submitted");
-            cboStatusFilter.Items.Add("Locked");
-            cboStatusFilter.Items.Add("Approved");
+            cboStatusFilter.Items.Add("Under Review");
+            cboStatusFilter.Items.Add("Shortlisted");
+            cboStatusFilter.Items.Add("For Interview");
+            cboStatusFilter.Items.Add("For Assessment");
+            cboStatusFilter.Items.Add("For Final Review");
+            cboStatusFilter.Items.Add("Accepted");
             cboStatusFilter.Items.Add("Rejected");
+            cboStatusFilter.Items.Add("Withdrawn");
 
             cboStatusFilter.SelectedIndex = 0;
         }
@@ -243,6 +292,53 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             txtSearch.Clear();
             cboStatusFilter.SelectedIndex = 0;
             LoadApplicants();
+        }
+
+        private void Back(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Hrstaff loginForm = new Hrstaff();
+            loginForm.Show();
+            this.Hide();
+        }
+
+        private void btnViewDocument_Click(object sender, EventArgs e)
+        {
+            if (dgvDocuments.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a document first.");
+                return;
+            }
+
+
+            string filePath =
+                dgvDocuments.SelectedRows[0]
+                .Cells["FilePath"]
+                .Value.ToString();
+
+
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                MessageBox.Show("No file available.");
+                return;
+            }
+
+
+            if (File.Exists(filePath))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = filePath,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                MessageBox.Show(
+                    "The document file cannot be found.",
+                    "Missing File",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
         }
     }
 }

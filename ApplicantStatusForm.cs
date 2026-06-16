@@ -17,6 +17,8 @@ namespace HR_Applicant_Process_Windows_System_MAIN.Forms
         {
             InitializeComponent();
             this.currentApplicantID = applicantID;
+
+            this.Load += ApplicationStatusForm_Load;
         }
 
         private void ApplicationStatusForm_Load(object sender, EventArgs e)
@@ -26,6 +28,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN.Forms
 
         private void LoadStatusHistory()
         {
+
             try
             {
                 using (MySqlConnection conn = DatabaseConnection.GetConnection())

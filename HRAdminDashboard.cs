@@ -137,7 +137,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             }
 
             string connString =
-                "server=localhost;database=hr_recruitment_db;uid=root;pwd=DDNLR023;";
+                "server=localhost;database=hr_recruitment_db;uid=root;pwd=ivor_blunt00;";
 
             string query =
                 "UPDATE Users SET RoleID = @roleId WHERE Username = @username";
@@ -196,21 +196,21 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
         private void Screening(object sender, EventArgs e)
         {
-            Screening loginForm = new Screening();
+            Screening2 loginForm = new Screening2();
             loginForm.Show();
             this.Hide();
         }
 
-        private void Interviewsched(object sender, EventArgs e)
+        private void interview(object sender, EventArgs e)
         {
-            Interviewsched loginForm = new Interviewsched();
+            InterviewSchedulingForm loginForm = new InterviewSchedulingForm();
             loginForm.Show();
             this.Hide();
         }
 
         private void Intervieweval(object sender, EventArgs e)
         {
-            InterviewEval loginForm = new InterviewEval();
+            InterviewEvaluationForm loginForm = new InterviewEvaluationForm();
             loginForm.Show();
             this.Hide();
         }

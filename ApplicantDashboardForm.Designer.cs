@@ -8,8 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HR_Applicant_Process_Windows_System_MAIN
-{
+namespace HR_RecruitmentSystem {
     using System;
     
     

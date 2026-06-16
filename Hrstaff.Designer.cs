@@ -32,16 +32,15 @@
             label10 = new Label();
             panel3 = new Panel();
             label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
             label4 = new Label();
             label5 = new Label();
             label6 = new Label();
             label7 = new Label();
-            label8 = new Label();
             label9 = new Label();
             label11 = new Label();
             panel1 = new Panel();
+            label3 = new Label();
+            label2 = new Label();
             panel2.SuspendLayout();
             panel1.SuspendLayout();
             SuspendLayout();
@@ -83,30 +82,6 @@
             label1.Size = new Size(98, 30);
             label1.TabIndex = 0;
             label1.Text = "HR Staff";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Segoe UI", 13F);
-            label2.ForeColor = Color.White;
-            label2.Location = new Point(12, 113);
-            label2.Name = "label2";
-            label2.Size = new Size(118, 25);
-            label2.TabIndex = 1;
-            label2.Text = "Applicant List";
-            label2.Click += ApplicantList;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI", 13F);
-            label3.ForeColor = Color.White;
-            label3.Location = new Point(12, 147);
-            label3.Name = "label3";
-            label3.Size = new Size(146, 25);
-            label3.TabIndex = 2;
-            label3.Text = "Applicant Review";
-            label3.Click += ApplicantReview;
             // 
             // label4
             // 
@@ -154,18 +129,6 @@
             label7.Size = new Size(0, 25);
             label7.TabIndex = 5;
             // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Font = new Font("Segoe UI", 13F);
-            label8.ForeColor = Color.White;
-            label8.Location = new Point(12, 286);
-            label8.Name = "label8";
-            label8.Size = new Size(73, 25);
-            label8.TabIndex = 6;
-            label8.Text = "Reports";
-            label8.Click += Reports;
-            // 
             // label9
             // 
             label9.AutoSize = true;
@@ -195,7 +158,6 @@
             panel1.BackColor = Color.MidnightBlue;
             panel1.Controls.Add(label11);
             panel1.Controls.Add(label9);
-            panel1.Controls.Add(label8);
             panel1.Controls.Add(label7);
             panel1.Controls.Add(label6);
             panel1.Controls.Add(label5);
@@ -208,6 +170,30 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(200, 451);
             panel1.TabIndex = 2;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI", 13F);
+            label3.ForeColor = Color.White;
+            label3.Location = new Point(12, 147);
+            label3.Name = "label3";
+            label3.Size = new Size(146, 25);
+            label3.TabIndex = 2;
+            label3.Text = "Applicant Review";
+            label3.Click += ApplicantReview;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 13F);
+            label2.ForeColor = Color.White;
+            label2.Location = new Point(12, 113);
+            label2.Name = "label2";
+            label2.Size = new Size(118, 25);
+            label2.TabIndex = 1;
+            label2.Text = "Applicant List";
+            label2.Click += ApplicantList;
             // 
             // Hrstaff
             // 

@@ -37,10 +37,23 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private void LoadDocumentTypes()
         {
             cboDocumentType.Items.Clear();
-            cboDocumentType.Items.Add("Resume");
-            cboDocumentType.Items.Add("Valid ID");
-            cboDocumentType.Items.Add("Transcript");
-            cboDocumentType.Items.Add("Certificate");
+
+            using (MySqlConnection conn = DatabaseConnection.GetConnection())
+            {
+                conn.Open();
+
+                string query = "SELECT RequirementName FROM RequirementTypes";
+
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        cboDocumentType.Items.Add(reader["RequirementName"].ToString());
+                    }
+                }
+            }
         }
 
         // =========================
@@ -175,6 +188,8 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                         cmd.Parameters.AddWithValue("@FilePath", destinationPath);
 
                         cmd.ExecuteNonQuery();
+
+                        AuditTrailManager.LogAction("Applicant", applicantID,"Uploaded document: " + cboDocumentType.Text);
                     }
                 }
 
@@ -264,13 +279,23 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         // =========================
         private void CheckMissingRequirements()
         {
-            List<string> required = new List<string>
+            List<string> required = new List<string>();
+            using (MySqlConnection conn = DatabaseConnection.GetConnection())
             {
-                "Resume",
-                "Valid ID",
-                "Transcript",
-                "Certificate"
-            };
+                conn.Open();
+
+                string query = "SELECT RequirementName FROM RequirementTypes";
+
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        required.Add(reader["RequirementName"].ToString());
+                    }
+                }
+            }
 
             foreach (DataGridViewRow row in dgvDocuments.Rows)
             {

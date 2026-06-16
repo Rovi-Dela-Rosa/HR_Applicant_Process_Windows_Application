@@ -458,6 +458,13 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void Back(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            HRAdminDashboard loginForm = new HRAdminDashboard();
+            loginForm.Show();
+            this.Hide();
+        }
     }
 
     public class RequirementItem

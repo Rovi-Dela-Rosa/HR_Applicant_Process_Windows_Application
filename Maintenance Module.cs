@@ -262,5 +262,12 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                 }
             }
         }
+
+        private void Back(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            HRAdminDashboard loginForm = new HRAdminDashboard();
+            loginForm.Show();
+            this.Hide();
+        }
     }
 }

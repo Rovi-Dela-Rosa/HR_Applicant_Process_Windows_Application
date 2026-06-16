@@ -43,12 +43,6 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             RoundPanel(pnlInterview, 25);
             RoundPanel(pnlUpdates, 25);
         }
-
-        private void ApplicantDashboardForm_Load_1(object sender, EventArgs e)
-        {
-            LoadApplicantProfileAndSummary();
-        }
-
         private void LoadApplicantProfileAndSummary()
         {
             try
@@ -250,7 +244,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(250, 0);
             panel2.Name = "panel2";
-            panel2.Size = new Size(732, 753);
+            panel2.Size = new Size(876, 753);
             panel2.TabIndex = 2;
             panel2.Paint += panel2_Paint;
             // 
@@ -281,7 +275,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             pnlUpdates.Controls.Add(label4);
             pnlUpdates.Location = new Point(34, 405);
             pnlUpdates.Name = "pnlUpdates";
-            pnlUpdates.Size = new Size(662, 223);
+            pnlUpdates.Size = new Size(830, 336);
             pnlUpdates.TabIndex = 3;
             // 
             // lstRecentUpdates
@@ -291,7 +285,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             lstRecentUpdates.Location = new Point(18, 44);
             lstRecentUpdates.Margin = new Padding(15);
             lstRecentUpdates.Name = "lstRecentUpdates";
-            lstRecentUpdates.Size = new Size(618, 164);
+            lstRecentUpdates.Size = new Size(786, 264);
             lstRecentUpdates.TabIndex = 1;
             // 
             // label4
@@ -313,14 +307,14 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             pnlInterview.Controls.Add(label2);
             pnlInterview.Location = new Point(34, 269);
             pnlInterview.Name = "pnlInterview";
-            pnlInterview.Size = new Size(662, 118);
+            pnlInterview.Size = new Size(830, 118);
             pnlInterview.TabIndex = 2;
             pnlInterview.Paint += pnlInterview_Paint;
             // 
             // lblInterviewLocation
             // 
             lblInterviewLocation.AutoSize = true;
-            lblInterviewLocation.Location = new Point(317, 50);
+            lblInterviewLocation.Location = new Point(326, 50);
             lblInterviewLocation.Name = "lblInterviewLocation";
             lblInterviewLocation.Size = new Size(69, 20);
             lblInterviewLocation.TabIndex = 3;
@@ -359,9 +353,9 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             pnlDocsCard.BackColor = Color.GhostWhite;
             pnlDocsCard.Controls.Add(lstMissingDocuments);
             pnlDocsCard.Controls.Add(label3);
-            pnlDocsCard.Location = new Point(351, 105);
+            pnlDocsCard.Location = new Point(426, 105);
             pnlDocsCard.Name = "pnlDocsCard";
-            pnlDocsCard.Size = new Size(345, 139);
+            pnlDocsCard.Size = new Size(438, 139);
             pnlDocsCard.TabIndex = 1;
             // 
             // lstMissingDocuments
@@ -388,7 +382,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             pnlStatusCard.Controls.Add(lblCurrentStatus);
             pnlStatusCard.Location = new Point(34, 105);
             pnlStatusCard.Name = "pnlStatusCard";
-            pnlStatusCard.Size = new Size(300, 139);
+            pnlStatusCard.Size = new Size(386, 139);
             pnlStatusCard.TabIndex = 0;
             pnlStatusCard.Paint += panel3_Paint;
             // 
@@ -414,7 +408,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Azure;
-            ClientSize = new Size(982, 753);
+            ClientSize = new Size(1126, 753);
             Controls.Add(panel2);
             Controls.Add(panel1);
             Name = "ApplicantDashboardForm";
@@ -530,9 +524,16 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                         }
                     }
 
-                    string docsQuery = @"SELECT rt.RequirementName FROM ApplicantDocuments ad
-                                         INNER JOIN RequirementTypes rt ON ad.RequirementTypeID = rt.RequirementTypeID
-                                         WHERE ad.ApplicantID = @ApplicantID AND ad.Status = 'Rejected'";
+                    string docsQuery = @"
+                    SELECT RequirementName
+                    FROM RequirementTypes
+                    WHERE RequirementTypeID NOT IN
+                    (
+                        SELECT RequirementTypeID
+                        FROM ApplicantDocuments
+                        WHERE ApplicantID = @ApplicantID
+                    )";
+
                     using (MySqlCommand cmd = new MySqlCommand(docsQuery, conn))
                     {
                         cmd.Parameters.AddWithValue("@ApplicantID", this.realApplicantID);
@@ -545,13 +546,13 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                         }
                     }
 
-                    if (lstMissingDocuments.Items.Count == 0 && applicationID > 0)
+                    if (applicationID == 0)
                     {
-                        lstMissingDocuments.Items.Add("All required documents are verified.");
+                        lstMissingDocuments.Items.Add("No active application.");
                     }
-                    else if (applicationID == 0)
+                    else if (lstMissingDocuments.Items.Count == 0)
                     {
-                        lstMissingDocuments.Items.Add("No documents submitted yet.");
+                        lstMissingDocuments.Items.Add("All required documents submitted.");
                     }
 
                     string interviewQuery = @"SELECT i.InterviewDate, i.Location, t.TypeName FROM InterviewSchedules i
@@ -620,16 +621,6 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private void ApplicantDashboardForm_Load(object sender, EventArgs e)
         {
             LoadApplicantProfileAndSummary();
-
-            if (this.realApplicantID == 0)
-            {
-                ApplicantProfileForm profileForm = new ApplicantProfileForm(this.loggedInAccountID);
-                profileForm.Show();
-
-                this.BeginInvoke(new MethodInvoker(this.Close));
-                return;
-            }
-
             LoadCurrentStatus();
         }
 

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             panel1 = new Panel();
+            linkLabel2 = new LinkLabel();
             button2 = new Button();
             label4 = new Label();
             label3 = new Label();
@@ -37,7 +38,6 @@
             richTextBox2 = new RichTextBox();
             richTextBox1 = new RichTextBox();
             label1 = new Label();
-            linkLabel2 = new LinkLabel();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -53,18 +53,32 @@
             panel1.Controls.Add(richTextBox2);
             panel1.Controls.Add(richTextBox1);
             panel1.Controls.Add(label1);
-            panel1.Location = new Point(261, 29);
+            panel1.Location = new Point(298, 39);
+            panel1.Margin = new Padding(3, 4, 3, 4);
             panel1.Name = "panel1";
-            panel1.Size = new Size(422, 384);
+            panel1.Size = new Size(482, 512);
             panel1.TabIndex = 0;
+            // 
+            // linkLabel2
+            // 
+            linkLabel2.AutoSize = true;
+            linkLabel2.LinkColor = Color.Black;
+            linkLabel2.Location = new Point(22, 16);
+            linkLabel2.Name = "linkLabel2";
+            linkLabel2.Size = new Size(66, 20);
+            linkLabel2.TabIndex = 11;
+            linkLabel2.TabStop = true;
+            linkLabel2.Text = "<-- Back";
+            linkLabel2.Click += Back;
             // 
             // button2
             // 
             button2.BackColor = SystemColors.ScrollBar;
             button2.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
-            button2.Location = new Point(124, 248);
+            button2.Location = new Point(142, 331);
+            button2.Margin = new Padding(3, 4, 3, 4);
             button2.Name = "button2";
-            button2.Size = new Size(175, 35);
+            button2.Size = new Size(200, 47);
             button2.TabIndex = 6;
             button2.Text = "Register Now";
             button2.UseVisualStyleBackColor = false;
@@ -74,9 +88,9 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI", 10F);
-            label4.Location = new Point(78, 195);
+            label4.Location = new Point(89, 260);
             label4.Name = "label4";
-            label4.Size = new Size(67, 19);
+            label4.Size = new Size(80, 23);
             label4.TabIndex = 5;
             label4.Text = "Password";
             // 
@@ -84,9 +98,9 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 10F);
-            label3.Location = new Point(78, 139);
+            label3.Location = new Point(89, 185);
             label3.Name = "label3";
-            label3.Size = new Size(41, 19);
+            label3.Size = new Size(51, 23);
             label3.TabIndex = 5;
             label3.Text = "Email";
             // 
@@ -94,33 +108,36 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 10F);
-            label2.Location = new Point(78, 78);
+            label2.Location = new Point(89, 104);
             label2.Name = "label2";
-            label2.Size = new Size(71, 19);
+            label2.Size = new Size(87, 23);
             label2.TabIndex = 4;
             label2.Text = "Username";
             // 
             // richTextBox3
             // 
-            richTextBox3.Location = new Point(78, 217);
+            richTextBox3.Location = new Point(89, 289);
+            richTextBox3.Margin = new Padding(3, 4, 3, 4);
             richTextBox3.Name = "richTextBox3";
-            richTextBox3.Size = new Size(279, 25);
+            richTextBox3.Size = new Size(318, 32);
             richTextBox3.TabIndex = 3;
             richTextBox3.Text = "";
             // 
             // richTextBox2
             // 
-            richTextBox2.Location = new Point(78, 161);
+            richTextBox2.Location = new Point(89, 215);
+            richTextBox2.Margin = new Padding(3, 4, 3, 4);
             richTextBox2.Name = "richTextBox2";
-            richTextBox2.Size = new Size(279, 25);
+            richTextBox2.Size = new Size(318, 32);
             richTextBox2.TabIndex = 2;
             richTextBox2.Text = "";
             // 
             // richTextBox1
             // 
-            richTextBox1.Location = new Point(78, 100);
+            richTextBox1.Location = new Point(89, 133);
+            richTextBox1.Margin = new Padding(3, 4, 3, 4);
             richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(279, 25);
+            richTextBox1.Size = new Size(318, 32);
             richTextBox1.TabIndex = 1;
             richTextBox1.Text = "";
             // 
@@ -128,34 +145,24 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 20F);
-            label1.Location = new Point(78, 22);
+            label1.Location = new Point(89, 29);
             label1.Name = "label1";
-            label1.Size = new Size(279, 37);
+            label1.Size = new Size(350, 46);
             label1.TabIndex = 0;
             label1.Text = "Applicant Registration";
             label1.TextAlign = ContentAlignment.TopCenter;
             // 
-            // linkLabel2
-            // 
-            linkLabel2.AutoSize = true;
-            linkLabel2.LinkColor = Color.Black;
-            linkLabel2.Location = new Point(19, 12);
-            linkLabel2.Name = "linkLabel2";
-            linkLabel2.Size = new Size(53, 15);
-            linkLabel2.TabIndex = 11;
-            linkLabel2.TabStop = true;
-            linkLabel2.Text = "<-- Back";
-            linkLabel2.Click += Back;
-            // 
             // Applicantregistration
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Azure;
-            ClientSize = new Size(891, 487);
+            ClientSize = new Size(1018, 649);
             Controls.Add(panel1);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "Applicantregistration";
             Text = "Form1";
+            Load += Applicantregistration_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ResumeLayout(false);

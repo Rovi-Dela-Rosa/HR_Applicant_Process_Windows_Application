@@ -29,7 +29,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             using (MySqlConnection conn = new MySqlConnection(connString))
             {
 
-                string query = @"SELECT u.RoleID
+                string query = @"SELECT r.RoleName 
                          FROM Users u 
                          JOIN Roles r ON u.RoleID = r.RoleID 
                          WHERE u.Username = @username 
@@ -48,13 +48,13 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
                     if (result != null)
                     {
-                        int roleID = Convert.ToInt32(result);
+                        string role = result.ToString();
 
-                        if (roleID == 1)
+                        if (role == "Admin")
                         {
                             new HRAdminDashboard().Show();
                         }
-                        else if (roleID == 2)
+                        else
                         {
                             new Hrstaff().Show();
                         }

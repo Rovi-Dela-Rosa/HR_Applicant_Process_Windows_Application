@@ -38,7 +38,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            label1.Location = new Point(284, 29);
+            label1.Location = new Point(295, 30);
             label1.Name = "label1";
             label1.Size = new Size(383, 41);
             label1.TabIndex = 0;
@@ -49,11 +49,11 @@
             dgvStatusHistory.AllowUserToDeleteRows = false;
             dgvStatusHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvStatusHistory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvStatusHistory.Location = new Point(50, 125);
+            dgvStatusHistory.Location = new Point(26, 125);
             dgvStatusHistory.Name = "dgvStatusHistory";
             dgvStatusHistory.ReadOnly = true;
             dgvStatusHistory.RowHeadersWidth = 51;
-            dgvStatusHistory.Size = new Size(874, 405);
+            dgvStatusHistory.Size = new Size(929, 475);
             dgvStatusHistory.TabIndex = 1;
             // 
             // btnBack
