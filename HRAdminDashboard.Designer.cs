@@ -30,16 +30,13 @@
         {
             panel3 = new Panel();
             label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
-            label5 = new Label();
-            label6 = new Label();
             label7 = new Label();
             label8 = new Label();
             label9 = new Label();
             label11 = new Label();
             label12 = new Label();
             panel1 = new Panel();
+            label10 = new Label();
             panel2 = new Panel();
             panel4 = new Panel();
             label19 = new Label();
@@ -58,7 +55,6 @@
             richTextBox3 = new RichTextBox();
             richTextBox2 = new RichTextBox();
             richTextBox1 = new RichTextBox();
-            label10 = new Label();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             panel4.SuspendLayout();
@@ -83,60 +79,12 @@
             label1.TabIndex = 0;
             label1.Text = "HR Admin";
             // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Segoe UI", 13F);
-            label2.ForeColor = Color.White;
-            label2.Location = new Point(12, 153);
-            label2.Name = "label2";
-            label2.Size = new Size(118, 25);
-            label2.TabIndex = 1;
-            label2.Text = "Applicant List";
-            label2.Click += ApplicantLists;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI", 13F);
-            label3.ForeColor = Color.White;
-            label3.Location = new Point(12, 192);
-            label3.Name = "label3";
-            label3.Size = new Size(146, 25);
-            label3.TabIndex = 2;
-            label3.Text = "Applicant Review";
-            label3.Click += Applicantreviewie;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Font = new Font("Segoe UI", 13F);
-            label5.ForeColor = Color.White;
-            label5.Location = new Point(12, 262);
-            label5.Name = "label5";
-            label5.Size = new Size(159, 25);
-            label5.TabIndex = 3;
-            label5.Text = "Interview Schedule";
-            label5.Click += Interviewsched;
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Font = new Font("Segoe UI", 13F);
-            label6.ForeColor = Color.White;
-            label6.Location = new Point(12, 297);
-            label6.Name = "label6";
-            label6.Size = new Size(169, 25);
-            label6.TabIndex = 4;
-            label6.Text = "Interview Evaluation";
-            label6.Click += Intervieweval;
-            // 
             // label7
             // 
             label7.AutoSize = true;
             label7.Font = new Font("Segoe UI", 13F);
             label7.ForeColor = Color.White;
-            label7.Location = new Point(12, 331);
+            label7.Location = new Point(12, 195);
             label7.Name = "label7";
             label7.Size = new Size(140, 25);
             label7.TabIndex = 5;
@@ -148,7 +96,7 @@
             label8.AutoSize = true;
             label8.Font = new Font("Segoe UI", 13F);
             label8.ForeColor = Color.White;
-            label8.Location = new Point(12, 365);
+            label8.Location = new Point(12, 238);
             label8.Name = "label8";
             label8.Size = new Size(73, 25);
             label8.TabIndex = 6;
@@ -201,16 +149,24 @@
             panel1.Controls.Add(label9);
             panel1.Controls.Add(label8);
             panel1.Controls.Add(label7);
-            panel1.Controls.Add(label6);
-            panel1.Controls.Add(label5);
-            panel1.Controls.Add(label3);
-            panel1.Controls.Add(label2);
             panel1.Controls.Add(label1);
             panel1.Controls.Add(panel3);
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
             panel1.Size = new Size(200, 451);
             panel1.TabIndex = 0;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Font = new Font("Segoe UI", 13F);
+            label10.ForeColor = Color.White;
+            label10.Location = new Point(11, 158);
+            label10.Name = "label10";
+            label10.Size = new Size(178, 25);
+            label10.TabIndex = 11;
+            label10.Text = "Maintenance Module";
+            label10.Click += Maintenance;
             // 
             // panel2
             // 
@@ -408,18 +364,6 @@
             richTextBox1.TabIndex = 0;
             richTextBox1.Text = "";
             // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Font = new Font("Segoe UI", 13F);
-            label10.ForeColor = Color.White;
-            label10.Location = new Point(12, 230);
-            label10.Name = "label10";
-            label10.Size = new Size(178, 25);
-            label10.TabIndex = 11;
-            label10.Text = "Maintenance Module";
-            label10.Click += Maintenance;
-            // 
             // HRAdminDashboard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -445,8 +389,6 @@
         private Label label1;
         private Label label2;
         private Label label3;
-        private Label label5;
-        private Label label6;
         private Label label7;
         private Label label8;
         private Label label9;

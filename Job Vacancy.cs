@@ -12,16 +12,29 @@ namespace HR_Applicant_Process_Windows_System_MAIN
     {
         private int loggedInAccountID;
         private int currentApplicantID;
+
+        private DataTable jobTable;
         private void dgvJobs_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = dgvJobs.Rows[e.RowIndex];
 
-                lblPosition.Text = "Position: " + (row.Cells[1].Value?.ToString() ?? "");
-                lblDepartment.Text = "Department: " + (row.Cells[2].Value?.ToString() ?? "");
-                lblType.Text = "Employment Type: " + (row.Cells[3].Value?.ToString() ?? "");
-                lblQualifications.Text = "Qualifications: " + (row.Cells[5].Value?.ToString() ?? "");
+                lblPosition.Text = "Position: " + (row.Cells["JobTitle"].Value?.ToString() ?? "");
+                lblDepartment.Text = "Department: " + (row.Cells["Department"].Value?.ToString() ?? "");
+                lblType.Text = "Employment Type: " + (row.Cells["EmploymentType"].Value?.ToString() ?? "");
+
+                if (dgvJobs.Columns.Contains("Qualifications"))
+                {
+                    lblQualifications.Text =
+                        "Qualifications: " +
+                        (row.Cells["Qualifications"].Value?.ToString() ?? "");
+                }
+                else
+                {
+                    lblQualifications.Text =
+                        "Qualifications: Not Available";
+                }
 
                 lblDocuments.Text = "Required Documents: Please see 'My Documents' page for submission requirements.";
             }
@@ -29,22 +42,32 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
         private void btnSearch_Click(object? sender, EventArgs e)
         {
-            string search = txtSearch.Text?.ToLower() ?? "";
+            if (jobTable == null)
+                return;
 
-            foreach (DataGridViewRow row in dgvJobs.Rows)
+            string search = txtSearch.Text.Trim();
+
+            if (string.IsNullOrEmpty(search))
             {
-                if (!row.IsNewRow)
-                {
-                    string position = row.Cells[1].Value?.ToString()?.ToLower() ?? "";
-                    row.Visible = position.Contains(search);
-                }
+                dgvJobs.DataSource = jobTable;
+                return;
             }
+
+
+            DataView view = new DataView(jobTable);
+
+            view.RowFilter =
+                $"JobTitle LIKE '%{search}%' OR " +
+                $"Department LIKE '%{search}%' OR " +
+                $"EmploymentType LIKE '%{search}%'";
+
+            dgvJobs.DataSource = view;
         }
 
         public JobVacancies(int loggedInID)
         {
             InitializeComponent();
-            dgvJobs.AutoGenerateColumns = false;
+            dgvJobs.AutoGenerateColumns = true;
 
             this.loggedInAccountID = loggedInID;
 
@@ -167,10 +190,10 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
                         MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
-                        DataTable dt = new DataTable();
-                        adapter.Fill(dt);
+                        jobTable = new DataTable();
+                        adapter.Fill(jobTable);
 
-                        dgvJobs.DataSource = dt;
+                        dgvJobs.DataSource = jobTable;
                     }
                 }
                 lblJobCount.Text = $"Total Jobs: {dgvJobs.Rows.Count}";
@@ -231,15 +254,31 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                         }
 
                         string insertQuery = @"INSERT INTO Applications (ApplicantID, VacancyID, CurrentStatus, AppliedDate) 
-                                               VALUES (@ApplicantID, @VacancyID, @CurrentStatus, NOW())";
+                                               VALUES (@ApplicantID, @VacancyID, 'Draft', NOW());
+
+                                                SELECT LAST_INSERT_ID();";
+
+                        int newApplicationID;
 
                         using (MySqlCommand cmd = new MySqlCommand(insertQuery, conn))
                         {
                             cmd.Parameters.AddWithValue("@ApplicantID", currentApplicantID);
                             cmd.Parameters.AddWithValue("@VacancyID", selectedVacancyID);
-                            cmd.Parameters.AddWithValue("@CurrentStatus", "Submitted");
 
-                            cmd.ExecuteNonQuery();
+                            newApplicationID = Convert.ToInt32(cmd.ExecuteScalar());
+                        }
+
+                        string historyQuery = @"INSERT INTO ApplicationStatusHistory (ApplicationID, Status, Remarks)
+                                                VALUES (@ApplicationID, 'Draft', 'Go to myapplication, then Submit an application for HR review.')";
+
+
+                        using (MySqlCommand historyCmd = new MySqlCommand(historyQuery, conn))
+                        {
+                            historyCmd.Parameters.AddWithValue("@ApplicationID", newApplicationID);
+
+                            historyCmd.ExecuteNonQuery();
+
+                            AuditTrailManager.LogAction("Applicant", currentApplicantID, "Applied for vacancy ID: " + selectedVacancyID);
                         }
 
                         MessageBox.Show($"You have successfully applied for:\nJob ID: {selectedVacancyID} - {position}\n\nRecord saved live to database!",
@@ -285,6 +324,11 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             dashboard.Show();
 
             this.Close();
+        }
+
+        private void btnApply_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -50,18 +50,19 @@
             panel1.Controls.Add(richTextBox3);
             panel1.Controls.Add(richTextBox1);
             panel1.Controls.Add(label1);
-            panel1.Location = new Point(187, 59);
+            panel1.Location = new Point(214, 79);
+            panel1.Margin = new Padding(3, 4, 3, 4);
             panel1.Name = "panel1";
-            panel1.Size = new Size(701, 515);
+            panel1.Size = new Size(801, 687);
             panel1.TabIndex = 3;
             // 
             // linkLabel2
             // 
             linkLabel2.AutoSize = true;
             linkLabel2.LinkColor = Color.Black;
-            linkLabel2.Location = new Point(18, 17);
+            linkLabel2.Location = new Point(21, 23);
             linkLabel2.Name = "linkLabel2";
-            linkLabel2.Size = new Size(53, 15);
+            linkLabel2.Size = new Size(66, 20);
             linkLabel2.TabIndex = 9;
             linkLabel2.TabStop = true;
             linkLabel2.Text = "<-- Back";
@@ -72,9 +73,10 @@
             button1.Anchor = AnchorStyles.None;
             button1.BackColor = Color.Red;
             button1.Font = new Font("Segoe UI", 15F);
-            button1.Location = new Point(286, 287);
+            button1.Location = new Point(327, 383);
+            button1.Margin = new Padding(3, 4, 3, 4);
             button1.Name = "button1";
-            button1.Size = new Size(138, 38);
+            button1.Size = new Size(158, 51);
             button1.TabIndex = 7;
             button1.Text = "Sign In";
             button1.TextAlign = ContentAlignment.TopCenter;
@@ -85,9 +87,9 @@
             // 
             label3.Anchor = AnchorStyles.None;
             label3.Font = new Font("Segoe UI", 10F);
-            label3.Location = new Point(227, 227);
+            label3.Location = new Point(259, 303);
             label3.Name = "label3";
-            label3.Size = new Size(138, 19);
+            label3.Size = new Size(158, 25);
             label3.TabIndex = 5;
             label3.Text = "Password";
             // 
@@ -95,27 +97,29 @@
             // 
             label2.Anchor = AnchorStyles.None;
             label2.Font = new Font("Segoe UI", 10F);
-            label2.Location = new Point(227, 169);
+            label2.Location = new Point(259, 225);
             label2.Name = "label2";
-            label2.Size = new Size(207, 19);
+            label2.Size = new Size(237, 25);
             label2.TabIndex = 4;
             label2.Text = "Username or email to change password";
             // 
             // richTextBox3
             // 
             richTextBox3.Anchor = AnchorStyles.None;
-            richTextBox3.Location = new Point(227, 249);
+            richTextBox3.Location = new Point(259, 332);
+            richTextBox3.Margin = new Padding(3, 4, 3, 4);
             richTextBox3.Name = "richTextBox3";
-            richTextBox3.Size = new Size(250, 23);
+            richTextBox3.Size = new Size(285, 29);
             richTextBox3.TabIndex = 3;
             richTextBox3.Text = "";
             // 
             // richTextBox1
             // 
             richTextBox1.Anchor = AnchorStyles.None;
-            richTextBox1.Location = new Point(227, 191);
+            richTextBox1.Location = new Point(259, 255);
+            richTextBox1.Margin = new Padding(3, 4, 3, 4);
             richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(250, 23);
+            richTextBox1.Size = new Size(285, 29);
             richTextBox1.TabIndex = 1;
             richTextBox1.Text = "";
             // 
@@ -123,9 +127,9 @@
             // 
             label1.Anchor = AnchorStyles.None;
             label1.Font = new Font("Segoe UI", 20F);
-            label1.Location = new Point(227, 33);
+            label1.Location = new Point(259, 44);
             label1.Name = "label1";
-            label1.Size = new Size(250, 82);
+            label1.Size = new Size(286, 109);
             label1.TabIndex = 0;
             label1.Text = "Change Password (HR)";
             label1.TextAlign = ContentAlignment.TopCenter;
@@ -133,13 +137,13 @@
             // 
             // HrChangePass
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Azure;
-            ClientSize = new Size(1017, 632);
+            ClientSize = new Size(1162, 843);
             Controls.Add(panel1);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "HrChangePass";
-            Text = "Form1";
             Click += btnChangePassword_Click;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();

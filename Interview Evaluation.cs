@@ -1,10 +1,11 @@
+using MySql.Data.MySqlClient;
 using System.Data;
 using System.Drawing;
-using MySql.Data.MySqlClient;
+using System.Runtime.CompilerServices;
 
 namespace HR_Applicant_Process_Windows_System_MAIN
 {
-    public partial class InterviewEval : Form
+    public partial class InterviewEvaluationForm : Form
     {
         private const string ConnStr =
             "server=localhost;" +
@@ -12,13 +13,15 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             "password=ivor_blunt00;" +
             "database=hr_recruitment_db;";
 
-        public InterviewEval()
+        public InterviewEvaluationForm()
         {
             InitializeComponent();
+            btnSave.Click += btnSave_Click;
 
             SetupComboBoxDrawing();
 
             LoadInterviews();
+            LoadEvaluators();
             LoadEvaluations();
 
             HookValidation();
@@ -28,7 +31,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
         private void SetupComboBoxDrawing()
         {
-            foreach (ComboBox cmb in new[] { cmbInterview, cmbResult })
+            foreach (ComboBox cmb in new[] { cmbInterview, cmbResult, cmbEvaluatedBy })
             {
                 cmb.DrawMode = DrawMode.OwnerDrawFixed;
                 cmb.DrawItem += ComboBox_DrawItem;
@@ -94,6 +97,32 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             }
         }
 
+        private void LoadEvaluators()
+        {
+            using (MySqlConnection conn = new MySqlConnection(ConnStr))
+            {
+                conn.Open();
+
+                string query = @"
+                    SELECT UserID, CONCAT(UserID, ' - ', Username) AS DisplayText
+                    FROM users";
+
+                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                DataRow row = dt.NewRow();
+                row["UserID"] = 0;
+                row["DisplayText"] = "-- Select Evaluator --";
+                dt.Rows.InsertAt(row, 0);
+
+                cmbEvaluatedBy.DataSource = dt;
+                cmbEvaluatedBy.DisplayMember = "DisplayText";
+                cmbEvaluatedBy.ValueMember = "UserID";
+                cmbEvaluatedBy.SelectedIndex = 0;
+            }
+        }
+
         private void LoadEvaluations()
         {
             using (MySqlConnection conn = new MySqlConnection(ConnStr))
@@ -107,11 +136,13 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                         isch.InterviewDate                   AS InterviewDateTime,
                         ev.Score,
                         ev.Result,
-                        ev.Remarks
+                        ev.Remarks,
+                        u.Username                           AS EvaluatedBy
                     FROM InterviewEvaluations ev
                     INNER JOIN InterviewSchedules isch ON ev.InterviewID     = isch.InterviewID
                     INNER JOIN Applications app        ON isch.ApplicationID = app.ApplicationID
                     INNER JOIN Applicants a            ON app.ApplicantID    = a.ApplicantID
+                    LEFT  JOIN users u                 ON ev.EvaluatedBy     = u.UserID
                     ORDER BY isch.InterviewDate DESC";
 
                 MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
@@ -127,6 +158,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                 dgvEvaluations.Columns["Score"].HeaderText = "Score";
                 dgvEvaluations.Columns["Result"].HeaderText = "Result";
                 dgvEvaluations.Columns["Remarks"].HeaderText = "Remarks";
+                dgvEvaluations.Columns["EvaluatedBy"].HeaderText = "Evaluated By";
 
                 dgvEvaluations.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                 dgvEvaluations.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -152,7 +184,8 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                 !string.IsNullOrWhiteSpace(txtScore.Text) &&
                 decimal.TryParse(txtScore.Text, out _) &&
                 cmbResult.SelectedIndex > -1 &&
-                !cmbResult.Text.StartsWith("-- Select");
+                !cmbResult.Text.StartsWith("-- Select") &&
+                cmbEvaluatedBy.SelectedIndex > 0;
 
             btnSave.Enabled = valid;
         }
@@ -161,10 +194,10 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         {
             cmbInterview.SelectionChangeCommitted += (s, e) => ValidateInputs();
             cmbResult.SelectionChangeCommitted += (s, e) => ValidateInputs();
+            cmbEvaluatedBy.SelectionChangeCommitted += (s, e) => ValidateInputs();
+
             txtScore.TextChanged += (s, e) => ValidateInputs();
             txtScore.Leave += txtScore_Leave;
-
-            btnSave.Click += btnSave_Click;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -186,27 +219,110 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
                     string query = @"
                         INSERT INTO InterviewEvaluations
-                            (InterviewID, Score, Result, Remarks)
+                            (InterviewID, Score, Result, Remarks, EvaluatedBy)
                         VALUES
-                            (@InterviewID, @Score, @Result, @Remarks)";
+                            (@InterviewID, @Score, @Result, @Remarks, @EvaluatedBy)";
 
                     MySqlCommand cmd = new MySqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@InterviewID", cmbInterview.SelectedValue);
                     cmd.Parameters.AddWithValue("@Score", score);
                     cmd.Parameters.AddWithValue("@Result", cmbResult.Text);
                     cmd.Parameters.AddWithValue("@Remarks", txtRemarks.Text.Trim());
+                    cmd.Parameters.AddWithValue("@EvaluatedBy", cmbEvaluatedBy.SelectedValue);
 
                     cmd.ExecuteNonQuery();
+
+                    AuditTrailManager.LogAction("HR Staff", Convert.ToInt32(cmbEvaluatedBy.SelectedValue),
+                        "Submitted interview evaluation for Interview ID: " + cmbInterview.SelectedValue);
+
+                    // GET APPLICATION ID
+                    string getApplicationQuery = @"
+                    SELECT ApplicationID
+                    FROM InterviewSchedules
+                    WHERE InterviewID=@InterviewID";
+
+
+                    int applicationID = 0;
+
+
+                    using (MySqlCommand getAppCmd = new MySqlCommand(getApplicationQuery, conn))
+                    {
+                        getAppCmd.Parameters.AddWithValue(
+                            "@InterviewID",
+                            cmbInterview.SelectedValue
+                        );
+
+                        applicationID = Convert.ToInt32(
+                            getAppCmd.ExecuteScalar()
+                        );
+                    }
+
+                    string updateInterviewQuery = @"
+                    UPDATE InterviewSchedules
+                    SET Status='Completed'
+                    WHERE InterviewID=@InterviewID";
+
+
+                    using (MySqlCommand interviewCmd =
+                    new MySqlCommand(updateInterviewQuery, conn))
+                    {
+                        interviewCmd.Parameters.AddWithValue(
+                            "@InterviewID",
+                            cmbInterview.SelectedValue
+                        );
+
+                        interviewCmd.ExecuteNonQuery();
+                    }
+
+                    string updateApplicationQuery = @"
+                    UPDATE Applications
+                    SET CurrentStatus='For Final Review'
+                    WHERE ApplicationID=@ApplicationID";
+
+
+                    using (MySqlCommand appCmd =
+                    new MySqlCommand(updateApplicationQuery, conn))
+                    {
+                        appCmd.Parameters.AddWithValue(
+                            "@ApplicationID",
+                            applicationID
+                        );
+
+                        appCmd.ExecuteNonQuery();
+                    }
+
+
+                    string historyQuery = @"
+                    INSERT INTO ApplicationStatusHistory
+                    (ApplicationID, Status, Remarks)
+                    VALUES
+                    (@ApplicationID,
+                    'For Final Review',
+                    'Interview evaluation completed. Application forwarded for final review.')";
+
+
+                    using (MySqlCommand historyCmd =
+                    new MySqlCommand(historyQuery, conn))
+                    {
+                        historyCmd.Parameters.AddWithValue(
+                            "@ApplicationID",
+                            applicationID
+                        );
+
+                        historyCmd.ExecuteNonQuery();
+                    }
 
                     MessageBox.Show("Evaluation saved successfully!");
 
                     LoadInterviews();
+                    LoadEvaluators();
                     LoadEvaluations();
 
                     txtScore.Clear();
                     txtRemarks.Clear();
                     cmbResult.SelectedIndex = -1;
                     cmbInterview.SelectedIndex = 0;
+                    cmbEvaluatedBy.SelectedIndex = 0;
 
                     ValidateInputs();
                 }

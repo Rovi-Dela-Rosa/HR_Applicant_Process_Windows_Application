@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             panel1 = new Panel();
+            linkLabel1 = new LinkLabel();
             linkLabel2 = new LinkLabel();
             HRsigninbtn = new Button();
             label4 = new Label();
@@ -38,7 +39,6 @@
             richTextBox2 = new RichTextBox();
             richTextBox1 = new RichTextBox();
             label1 = new Label();
-            linkLabel1 = new LinkLabel();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -62,6 +62,17 @@
             panel1.Size = new Size(385, 355);
             panel1.TabIndex = 0;
             // 
+            // linkLabel1
+            // 
+            linkLabel1.AutoSize = true;
+            linkLabel1.Location = new Point(254, 322);
+            linkLabel1.Name = "linkLabel1";
+            linkLabel1.Size = new Size(101, 15);
+            linkLabel1.TabIndex = 11;
+            linkLabel1.TabStop = true;
+            linkLabel1.Text = "Change Password";
+            linkLabel1.Click += Changepass;
+            // 
             // linkLabel2
             // 
             linkLabel2.AutoSize = true;
@@ -77,9 +88,9 @@
             // HRsigninbtn
             // 
             HRsigninbtn.Anchor = AnchorStyles.None;
-            HRsigninbtn.BackColor = Color.Red;
+            HRsigninbtn.BackColor = Color.LightGray;
             HRsigninbtn.Font = new Font("Segoe UI", 15F);
-            HRsigninbtn.Location = new Point(122, 255);
+            HRsigninbtn.Location = new Point(122, 267);
             HRsigninbtn.MaximumSize = new Size(1200, 700);
             HRsigninbtn.Name = "HRsigninbtn";
             HRsigninbtn.Size = new Size(138, 38);
@@ -156,33 +167,22 @@
             // 
             label1.Anchor = AnchorStyles.None;
             label1.Font = new Font("Segoe UI", 20F);
-            label1.Location = new Point(122, 20);
+            label1.Location = new Point(122, 29);
             label1.MaximumSize = new Size(1200, 700);
             label1.Name = "label1";
-            label1.Size = new Size(138, 42);
+            label1.Size = new Size(149, 42);
             label1.TabIndex = 0;
-            label1.Text = "HR Log-In";
-            // 
-            // linkLabel1
-            // 
-            linkLabel1.AutoSize = true;
-            linkLabel1.Location = new Point(281, 328);
-            linkLabel1.Name = "linkLabel1";
-            linkLabel1.Size = new Size(101, 15);
-            linkLabel1.TabIndex = 11;
-            linkLabel1.TabStop = true;
-            linkLabel1.Text = "Change Password";
-            linkLabel1.Click += Changepass;
+            label1.Text = "HR Log-in";
             // 
             // HRLogin
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Azure;
-            ClientSize = new Size(1011, 633);
+            ClientSize = new Size(1011, 562);
             Controls.Add(panel1);
             Name = "HRLogin";
-            Text = "Form1";
+            Text = "HR Log In";
             Click += btnLogin_Click;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();

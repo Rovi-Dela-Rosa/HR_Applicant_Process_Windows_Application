@@ -10,8 +10,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
     public partial class MyApplicationPage : Form
     {
         private int currentApplicantID;
-        private bool isSubmitted = true;
-        private bool isUnderHRReview = false;
+        private string currentStatus = "";
 
         public MyApplicationPage(int dynamicID)
         {
@@ -32,9 +31,11 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             SELECT 
                 a.ApplicationID,
                 a.CurrentStatus,
+                CONCAT(ap.FirstName, ' ', ap.LastName) AS ApplicantName,
                 p.PositionName,
                 d.DepartmentName
             FROM Applications a
+            INNER JOIN Applicants ap ON a.ApplicantID = ap.ApplicantID
             INNER JOIN JobVacancies jv ON a.VacancyID = jv.VacancyID
             INNER JOIN Positions p ON jv.PositionID = p.PositionID
             INNER JOIN Departments d ON jv.DepartmentID = d.DepartmentID
@@ -59,11 +60,21 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                                 lblStatus.Text =
                                     reader["CurrentStatus"].ToString();
 
-                                txtApplicantName.Text = "Applicant #" + currentApplicantID;
+                                currentStatus = reader["CurrentStatus"].ToString();
+
+                                txtApplicantName.Text =
+                                    reader["ApplicantName"].ToString();
 
                                 lblStatus.ForeColor = Color.Navy;
 
-                                ToggleFormControls(false);
+                                if (currentStatus == "Draft" || currentStatus == "Submitted")
+                                {
+                                    ToggleFormControls(true);
+                                }
+                                else
+                                {
+                                    ToggleFormControls(false);
+                                }
                             }
                             else
                             {
@@ -89,65 +100,243 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             }
         }
 
+        private void AddStatusHistory(int applicationID, string status, string remarks)
+        {
+            using (var conn = DatabaseConnection.GetConnection())
+            {
+                conn.Open();
+
+                string query = @"
+                                INSERT INTO ApplicationStatusHistory
+                                (ApplicationID, Status, Remarks)
+                                VALUES
+                                (@ApplicationID,@Status,@Remarks)";
+
+                MySqlCommand cmd =
+                new MySqlCommand(query, conn);
+
+                cmd.Parameters.AddWithValue("@ApplicationID", applicationID);
+                cmd.Parameters.AddWithValue("@Status", status);
+                cmd.Parameters.AddWithValue("@Remarks", remarks);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private bool IsApplicationLocked()
+        {
+            string[] lockedStatuses =
+            {
+                "Under Review",
+                "Shortlisted",
+                "For Interview",
+                "For Assessment",
+                "For Final Review",
+                "Accepted",
+                "Rejected",
+                "Withdrawn",
+            };
+
+            return Array.Exists(
+                lockedStatuses,
+                status => status.Equals(currentStatus,
+                StringComparison.OrdinalIgnoreCase));
+        }
+
         private void btnSaveDraft_Click(object sender, EventArgs e)
         {
-            if (isSubmitted)
+            if (IsApplicationLocked())
             {
-                MessageBox.Show("Cannot save as draft. This application package has already been locked and submitted to HR. Click 'Edit Application' to revert it first.",
-                                "System Restriction", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    "Cannot save as draft. This application is already locked or under HR review.",
+                    "System Restriction",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
                 return;
             }
 
-            lblStatus.Text = "Draft";
-            lblStatus.ForeColor = Color.DarkOrange;
-            MessageBox.Show("Your changes have been securely saved as a local Draft!", "Draft State Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                using (var conn = DatabaseConnection.GetConnection())
+                {
+                    conn.Open();
+
+                    string query = @"
+                                   UPDATE Applications
+                                   SET CurrentStatus = @Status
+                                   WHERE ApplicantID = @ApplicantID";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Status", "Draft");
+                        cmd.Parameters.AddWithValue("@ApplicantID", currentApplicantID);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                lblStatus.Text = "Draft";
+                lblStatus.ForeColor = Color.DarkOrange;
+
+                MessageBox.Show(
+                    "Draft saved successfully!",
+                    "Draft Saved",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Database Error: " + ex.Message);
+                return;
+            }
         }
 
 
         private void btnSubmit_Click(object sender, EventArgs e)
         {
+            if (currentStatus != "Draft")
+            {
+                MessageBox.Show(
+                    "This application cannot be submitted because it is already processed by HR.",
+                    "Submission Restricted",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+
+            }
             if (string.IsNullOrWhiteSpace(txtApplicantName.Text))
             {
-                MessageBox.Show("Please enter your full name before processing the submission pipeline.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    "Please enter your full name before processing the submission pipeline.",
+                    "Validation Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
                 return;
             }
 
-            isSubmitted = true;
-            lblStatus.Text = "Submitted / Pending HR Review";
-            lblStatus.ForeColor = Color.Navy;
+            try
+            {
+                using (var conn = DatabaseConnection.GetConnection())
+                {
+                    conn.Open();
 
-            ToggleFormControls(false);
+                    string query = @"
+                    UPDATE Applications
+                    SET CurrentStatus = @Status
+                    WHERE ApplicantID = @ApplicantID";
 
-            MessageBox.Show("Your updated application package has been successfully transmitted to corporate recruitment arrays!", "Submission Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue(
+                            "@Status",
+                            "Submitted"
+                        );
+
+                        cmd.Parameters.AddWithValue(
+                            "@ApplicantID",
+                            currentApplicantID
+                        );
+
+                        cmd.ExecuteNonQuery();
+
+                        AuditTrailManager.LogAction("Applicant", currentApplicantID,"Submitted application for HR review");
+
+                        int applicationID = 0;
+
+                        string getIDQuery = @"
+                                            SELECT ApplicationID
+                                            FROM Applications
+                                            WHERE ApplicantID=@ApplicantID
+                                            ORDER BY AppliedDate DESC
+                                            LIMIT 1";
+
+                        using (MySqlCommand idCmd = new MySqlCommand(getIDQuery, conn))
+                        {
+                            idCmd.Parameters.AddWithValue("@ApplicantID", currentApplicantID);
+
+                            applicationID = Convert.ToInt32(idCmd.ExecuteScalar());
+                        }
+
+
+                        // Insert status history
+                        string historyQuery = @"
+                                                INSERT INTO ApplicationStatusHistory
+                                                (ApplicationID, Status, Remarks)
+                                                VALUES
+                                                (@ApplicationID, 'Submitted',
+                                                'Application submitted and waiting for HR review.')";
+
+
+                        using (MySqlCommand historyCmd = new MySqlCommand(historyQuery, conn))
+                        {
+                            historyCmd.Parameters.AddWithValue("@ApplicationID", applicationID);
+
+                            historyCmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    currentStatus = "Submitted";
+
+
+                    lblStatus.Text = "Submitted / Pending HR Review";
+
+                    lblStatus.ForeColor = Color.Navy;
+
+                    if (IsApplicationLocked())
+                    {
+                        ToggleFormControls(false);
+                    }
+                    else
+                    {
+                        ToggleFormControls(true);
+                    }
+
+                    MessageBox.Show(
+                        "Application submitted successfully!",
+                        "Submission Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
+                    );
+                }
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Database Error: " + ex.Message,
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
         }
 
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            if (isUnderHRReview)
+            if (IsApplicationLocked())
             {
-                MessageBox.Show("Access Denied: HR corporate review has already started. Profile properties are now locked.", "System Evaluation Lock", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show(
+                    "This application is currently locked because HR has already started reviewing it.",
+                    "Application Locked",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
                 return;
             }
 
-            if (isSubmitted)
-            {
-                DialogResult systemDialog = MessageBox.Show("Would you like to withdraw your current submission to modify your documents and profile details?", "Unlock Application Entry", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                if (systemDialog == DialogResult.Yes)
-                {
-                    isSubmitted = false;
-                    lblStatus.Text = "Draft";
-                    lblStatus.ForeColor = Color.DarkOrange;
+            ToggleFormControls(true);
 
-                    ToggleFormControls(true);
-                    MessageBox.Show("Form unlocked! You may now revise your full name or upload alternative documents.", "Edit Mode Activated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            else
-            {
-                MessageBox.Show("The form structure is already unlocked and ready for live inputs.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            MessageBox.Show(
+                "Application unlocked. You may edit your details.",
+                "Edit Mode",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
 
         private void ToggleFormControls(bool state)
@@ -156,6 +345,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             btnBrowseResume.Enabled = state;
             btnBrowseTranscript.Enabled = state;
             btnSaveDraft.Enabled = state;
+            btnSubmit.Enabled = state;
         }
 
 
@@ -200,6 +390,77 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             ApplicantDashboardForm dashboard = new ApplicantDashboardForm(currentApplicantID);
             dashboard.Show();
             this.Close();
+        }
+
+        private void btnWithdraw_Click(object sender, EventArgs e)
+        {
+            if (IsApplicationLocked())
+            {
+                MessageBox.Show(
+                "This application can no longer be withdrawn.",
+                "Withdrawal Not Allowed",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+
+                return;
+            }
+
+
+            DialogResult result = MessageBox.Show(
+                "Are you sure you want to withdraw your application?",
+                "Confirm Withdrawal",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+
+            if (result == DialogResult.Yes)
+            {
+                using (var conn = DatabaseConnection.GetConnection())
+                {
+                    conn.Open();
+
+                    string query = @"
+            UPDATE Applications
+            SET CurrentStatus='Withdrawn'
+            WHERE ApplicantID=@ApplicantID";
+
+                    MySqlCommand cmd =
+                    new MySqlCommand(query, conn);
+
+                    cmd.Parameters.AddWithValue(
+                        "@ApplicantID",
+                        currentApplicantID);
+
+                    cmd.ExecuteNonQuery();
+
+                    AuditTrailManager.LogAction("Applicant", currentApplicantID, "Withdrawn application");
+
+                    string historyQuery = @"
+                                            INSERT INTO ApplicationStatusHistory
+                                            (ApplicationID, Status, Remarks)
+                                            SELECT ApplicationID,
+                                            'Withdrawn',
+                                            'Applicant withdrew the application.'
+                                            FROM Applications
+                                            WHERE ApplicantID=@ApplicantID
+                                            ORDER BY AppliedDate DESC
+                                            LIMIT 1";
+
+
+                    using (MySqlCommand historyCmd = new MySqlCommand(historyQuery, conn))
+                    {
+                        historyCmd.Parameters.AddWithValue("@ApplicantID", currentApplicantID);
+
+                        historyCmd.ExecuteNonQuery();
+                    }
+                }
+
+
+                MessageBox.Show(
+                "Application withdrawn successfully.");
+
+                LoadApplicationData();
+            }
         }
     }
 }

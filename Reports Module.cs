@@ -1,4 +1,5 @@
 using System.Data;
+using System.IO;
 using System.Drawing;
 using MySql.Data.MySqlClient;
 
@@ -19,6 +20,8 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             LoadAllReports();
 
             btnRefresh.Click += (s, e) => LoadAllReports();
+            btnGenerateReport.Click += btnGenerateReport_Click;
+
             tabReports.SelectedIndexChanged += (s, e) => UpdateCountLabel();
         }
 
@@ -325,7 +328,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                         COALESCE(app.CurrentStatus, '-')                AS AppStatus
                     FROM Applicants a
                     LEFT  JOIN ApplicantAccounts aa ON a.AccountID         = aa.AccountID
-                    LEFT  JOIN Applications app     ON a.ApplicantID       = app.ApplicantID
+                    INNER  JOIN Applications app     ON a.ApplicantID       = app.ApplicantID
                     LEFT  JOIN JobVacancies jv      ON app.VacancyID       = jv.VacancyID
                     LEFT  JOIN Positions p          ON jv.PositionID       = p.PositionID
                     CROSS JOIN RequirementTypes rt
@@ -334,6 +337,11 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                         AND rt.RequirementTypeID   = ad.RequirementTypeID
                         AND ad.Status              = 'Approved'
                     WHERE ad.DocumentID IS NULL
+                    AND (
+                        app.CurrentStatus IS NULL
+                        OR app.CurrentStatus NOT IN
+                        ('Hired','Accepted','Rejected','Withdrawn')
+                    )
                     GROUP BY
                         a.ApplicantID,
                         a.FirstName,
@@ -410,6 +418,65 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             dgv.ReadOnly = true;
             dgv.AllowUserToAddRows = false;
             dgv.RowHeadersVisible = false;
+        }
+
+        private void Back(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            HRAdminDashboard loginForm = new HRAdminDashboard();
+            loginForm.Show();
+            this.Hide();
+        }
+
+        private void btnGenerateReport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (SaveFileDialog save = new SaveFileDialog())
+                {
+                    save.Filter = "CSV File (*.csv)|*.csv";
+                    save.FileName = "Recruitment_Report.csv";
+
+                    if (save.ShowDialog() == DialogResult.OK)
+                    {
+                        using (StreamWriter sw = new StreamWriter(save.FileName))
+                        {
+                            for (int i = 0; i < dgvDecisions.Columns.Count; i++)
+                            {
+                                sw.Write(dgvDecisions.Columns[i].HeaderText);
+
+                                if (i < dgvDecisions.Columns.Count - 1)
+                                    sw.Write(",");
+                            }
+
+                            sw.WriteLine();
+
+                            foreach (DataGridViewRow row in dgvDecisions.Rows)
+                            {
+                                for (int i = 0; i < dgvDecisions.Columns.Count; i++)
+                                {
+                                    sw.Write(row.Cells[i].Value?.ToString());
+
+                                    if (i < dgvDecisions.Columns.Count - 1)
+                                        sw.Write(",");
+                                }
+
+                                sw.WriteLine();
+                            }
+                        }
+
+                        MessageBox.Show(
+                            "Recruitment report generated successfully!",
+                            "Export Complete",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Report generation error:\n" + ex.Message);
+            }
         }
     }
 }

@@ -9,12 +9,13 @@ namespace HR_Applicant_Process_Windows_System_MAIN
         private const string ConnStr =
             "server=localhost;" +
             "user=root;" +
-            "password=DDNLR023;" +
+            "password=ivor_blunt00;" +
             "database=hr_recruitment_db;";
 
         public HireDecision()
         {
             InitializeComponent();
+            dtpDecisionDate.MinDate = DateTime.Today;
 
             SetupComboBoxDrawing();
 
@@ -70,7 +71,7 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                     INNER JOIN Applicants a ON app.ApplicantID = a.ApplicantID
                     INNER JOIN InterviewSchedules isch ON app.ApplicationID = isch.ApplicationID
                     INNER JOIN InterviewEvaluations ev ON isch.InterviewID  = ev.InterviewID
-                    WHERE ev.Result IN ('Passed', 'Waitlisted')
+                    WHERE app.CurrentStatus='For Final Review'
                     AND app.ApplicationID NOT IN
                     (
                         SELECT ApplicationID FROM HiringDecisions
@@ -182,11 +183,57 @@ namespace HR_Applicant_Process_Windows_System_MAIN
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            if (dtpDecisionDate.Value.Date < DateTime.Today)
+            {
+                MessageBox.Show(
+                    "Decision date cannot be earlier than today.",
+                    "Invalid Date",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
             try
             {
                 using (MySqlConnection conn = new MySqlConnection(ConnStr))
                 {
                     conn.Open();
+
+                    DateTime interviewDate;
+
+                    string checkInterviewDateQuery = @"
+                    SELECT isch.InterviewDate
+                    FROM InterviewSchedules isch
+                    INNER JOIN Applications app
+                    ON isch.ApplicationID = app.ApplicationID
+                    WHERE app.ApplicationID=@ApplicationID";
+
+
+                    using (MySqlCommand dateCmd =
+                    new MySqlCommand(checkInterviewDateQuery, conn))
+                    {
+                        dateCmd.Parameters.AddWithValue(
+                            "@ApplicationID",
+                            cmbApplication.SelectedValue
+                        );
+
+                        interviewDate =
+                            Convert.ToDateTime(dateCmd.ExecuteScalar());
+                    }
+
+
+                    if (dtpDecisionDate.Value.Date < interviewDate.Date)
+                    {
+                        MessageBox.Show(
+                            "Hiring decision date cannot be earlier than the interview date.",
+                            "Invalid Decision Date",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning
+                        );
+
+                        return;
+                    }
 
                     string query = @"
                         INSERT INTO HiringDecisions
@@ -202,6 +249,58 @@ namespace HR_Applicant_Process_Windows_System_MAIN
                     cmd.Parameters.AddWithValue("@DecisionDate", dtpDecisionDate.Value);
 
                     cmd.ExecuteNonQuery();
+
+                    AuditTrailManager.LogAction("HR Staff", Convert.ToInt32(cmbDecisionBy.SelectedValue), "Made hiring decision: "
+                    + cmbDecisionStatus.Text + " for Application ID: " + cmbApplication.SelectedValue);
+
+                    string updateApplicationQuery = @"
+                    UPDATE Applications
+                    SET CurrentStatus=@Status
+                    WHERE ApplicationID=@ApplicationID";
+
+                    using (MySqlCommand updateCmd = new MySqlCommand(updateApplicationQuery, conn))
+                    {
+                        string newStatus = cmbDecisionStatus.Text;
+
+                        updateCmd.Parameters.AddWithValue(
+                            "@Status",
+                            newStatus
+                        );
+
+                        updateCmd.Parameters.AddWithValue(
+                            "@ApplicationID",
+                            cmbApplication.SelectedValue
+                        );
+
+                        updateCmd.ExecuteNonQuery();
+                    }
+
+                    string historyQuery = @"
+                    INSERT INTO ApplicationStatusHistory
+                    (ApplicationID, Status, Remarks)
+                    VALUES
+                    (@ApplicationID,@Status,@Remarks)";
+
+
+                    using (MySqlCommand historyCmd = new MySqlCommand(historyQuery, conn))
+                    {
+                        historyCmd.Parameters.AddWithValue(
+                            "@ApplicationID",
+                            cmbApplication.SelectedValue
+                        );
+
+                        historyCmd.Parameters.AddWithValue(
+                            "@Status",
+                            cmbDecisionStatus.Text
+                        );
+
+                        historyCmd.Parameters.AddWithValue(
+                            "@Remarks",
+                            txtRemarks.Text.Trim()
+                        );
+
+                        historyCmd.ExecuteNonQuery();
+                    }
 
                     MessageBox.Show("Hiring decision saved successfully!");
 
@@ -221,6 +320,13 @@ namespace HR_Applicant_Process_Windows_System_MAIN
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void Back(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            HRAdminDashboard loginForm = new HRAdminDashboard();
+            loginForm.Show();
+            this.Hide();
         }
     }
 }

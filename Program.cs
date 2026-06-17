@@ -1,4 +1,3 @@
-using HR_Recruitment_System;
 
 namespace HR_Applicant_Process_Windows_System_MAIN
 {
