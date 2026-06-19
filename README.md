@@ -87,4 +87,17 @@ Prompts used:
 How AI helped me:
 AI helped me by explaining the steps for connecting my project to MySQL, accessing database tables, and troubleshooting errors. The explanations and suggestions helped me understand the process and continue working on my project.
 Estinopo -
-Vistar-
+Vistar- AI Usage: 
+
+I used AI to guide me in structuring my Job Vacancies and My Application page, fixing MySQL database connection errors, and handling application status controls like draft, submitted, and withdrawn.
+
+What Prompt Did I Use:
+
+* How do I connect a VS Code project to a MySQL database?
+* How do I implement application statuses like Draft, Submitted, and Withdrawn in a simple HR system?
+* How do I safely update and log application status changes in MySQL?
+
+What I Improved after using Ai?
+
+The AI helped me clean up my code. It also guided me on how to lock applications and handle application status controls, which helped me understand how the system works and how to fix errors in my code.
+
