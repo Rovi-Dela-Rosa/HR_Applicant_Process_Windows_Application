@@ -86,7 +86,11 @@ Prompts used:
 
 How AI helped me:
 AI helped me by explaining the steps for connecting my project to MySQL, accessing database tables, and troubleshooting errors. The explanations and suggestions helped me understand the process and continue working on my project.
+
+
 Estinopo -
+
+
 Vistar- AI Usage: 
 
 I used AI to guide me in structuring my Job Vacancies and My Application page, fixing MySQL database connection errors, and handling application status controls like draft, submitted, and withdrawn.
